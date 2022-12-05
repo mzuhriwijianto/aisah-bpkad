@@ -1,0 +1,76 @@
+@extends("la.layouts.app")
+
+@section("contentheader_title")
+	<a href="{{ url(config('laraadmin.adminRoute') . '/kibbs') }}">Kibb</a> :
+@endsection
+@section("contentheader_description", $kibb->$view_col)
+@section("section", "Kibbs")
+@section("section_url", url(config('laraadmin.adminRoute') . '/kibbs'))
+@section("sub_section", "Edit")
+
+@section("htmlheader_title", "Kibbs Edit : ".$kibb->$view_col)
+
+@section("main-content")
+
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<div class="box">
+	<div class="box-header">
+		
+	</div>
+	<div class="box-body">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				{!! Form::model($kibb, ['route' => [config('laraadmin.adminRoute') . '.kibbs.update', $kibb->id ], 'method'=>'PUT', 'id' => 'kibb-edit-form']) !!}
+					{{--@la_form($module)--}}
+					
+					{{--
+					@la_input($module, 'idpemda')
+					@la_input($module, 'merk')
+					@la_input($module, 'type')
+					@la_input($module, 'cc')
+					@la_input($module, 'tgl_perolehan')
+					@la_input($module, 'nomor_rangka')
+					@la_input($module, 'nomor_mesin')
+					@la_input($module, 'nomor_polisi')
+					@la_input($module, 'nomor_bpkb')
+					@la_input($module, 'harga')
+					@la_input($module, 'kd_bidang')
+					@la_input($module, 'kd_unit')
+					@la_input($module, 'kd_sub')
+					@la_input($module, 'kd_upb')
+					@la_input($module, 'rack_no')
+					@la_input($module, 'storage_no')
+					--}}
+					@la_input($module, 'bpkb_file')					
+					@la_input($module, 'stnk_file')					
+					@la_input($module, 'photo')					
+                    <br>
+					<div class="form-group">
+						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <a href="{{ url(config('laraadmin.adminRoute') . '/kibbs') }}" class="btn btn-default pull-right">Cancel</a>
+					</div>
+				{!! Form::close() !!}
+			</div>
+		</div>
+	</div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+$(function () {
+	$("#kibb-edit-form").validate({
+		
+	});
+});
+</script>
+@endpush

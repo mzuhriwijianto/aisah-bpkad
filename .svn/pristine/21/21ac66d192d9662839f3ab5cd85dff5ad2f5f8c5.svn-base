@@ -1,0 +1,80 @@
+<?php $__env->startSection("contentheader_title"); ?>
+	<a href="<?php echo e(url(config('laraadmin.adminRoute') . '/racks')); ?>">Racks</a> :
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection("contentheader_description", $kendaraan->$view_col_kendaraan); ?>
+<?php $__env->startSection("section", "Racks"); ?>
+<?php $__env->startSection("section_url", url(config('laraadmin.adminRoute') . '/racks')); ?>
+<?php $__env->startSection("sub_section", "Edit"); ?>
+
+<?php $__env->startSection("htmlheader_title", "Kendaraans Edit : ".$kendaraan->$view_col_kendaraan); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div class="box">
+	<div class="box-header">
+		
+	</div>
+	<div class="box-body">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+			<form method="POST" action="/admin/updatekendaraan/<?php echo e($kendaraan->id); ?>" accept-charset="UTF-8" id="kendaraan-edit-form" novalidate="novalidate">
+			<input name="_method" type="hidden" value="PUT">
+			<input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
+			
+					
+			<?php /* Form::model($kendaraan, ['route' => [config('laraadmin.adminRoute') . '.kendaraans.update', $kendaraan->id ], 'method'=>'PUT', 'id' => 'kendaraan-edit-form']) */ ?>
+				<?php /* Form::model($kendaraan, ['route' => [config('laraadmin.adminRoute') . '.racks.updatekendaraan', $kendaraan->id ], 'method'=>'PUT', 'id' => 'kendaraan-edit-form']) */ ?>
+					<?php /*<?php echo LAFormMaker::form($module); ?>*/ ?>
+					
+					<?php /*
+					<?php echo LAFormMaker::input($module, 'idpemda'); ?>
+					<?php echo LAFormMaker::input($module, 'merk'); ?>
+					<?php echo LAFormMaker::input($module, 'type'); ?>
+					<?php echo LAFormMaker::input($module, 'cc'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_perolehan'); ?>
+					<?php echo LAFormMaker::input($module, 'no_rangka'); ?>
+					<?php echo LAFormMaker::input($module, 'no_mesin'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_polisi'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_bpkb'); ?>
+					<?php echo LAFormMaker::input($module, 'storage_no'); ?>
+					*/ ?>
+					<?php echo LAFormMaker::input($module, 'bpkb_file'); ?>
+					<?php echo LAFormMaker::input($module, 'stnk_file'); ?>
+					<?php echo LAFormMaker::input($module, 'photo'); ?>
+					<?php echo LAFormMaker::input($module, 'rack_no'); ?>
+					
+					
+                    <br>
+					<div class="form-group">
+						<?php echo Form::submit( 'Update', ['class'=>'btn btn-success']); ?> <a href="<?php echo e(url(config('laraadmin.adminRoute') . '/racks#lists')); ?>" class="btn btn-default pull-right">Cancel</a>
+					</div>
+				<?php echo Form::close(); ?>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+$(function () {
+	$("#kendaraan-edit-form").validate({
+		
+	});
+});
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

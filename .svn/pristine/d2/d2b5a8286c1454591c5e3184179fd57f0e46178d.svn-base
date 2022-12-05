@@ -1,0 +1,151 @@
+<?php
+
+/* ================== Homepage ================== */
+Route::get('/', 'HomeController@index');
+Route::get('/home', 'HomeController@index');
+Route::auth();
+
+/* ================== Access Uploaded Files ================== */
+Route::get('files/{hash}/{name}', 'LA\UploadsController@get_file');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Application Routes
+|--------------------------------------------------------------------------
+*/
+
+$as = "";
+if(\Dwij\Laraadmin\Helpers\LAHelper::laravel_ver() == 5.3) {
+	$as = config('laraadmin.adminRoute').'.';
+	
+	// Routes for Laravel 5.3
+	Route::get('/logout', 'Auth\LoginController@logout');
+}
+
+Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], function () {
+	
+	/* ================== Dashboard ================== */
+	
+	Route::get(config('laraadmin.adminRoute'), 'LA\DashboardController@index');
+	Route::get(config('laraadmin.adminRoute'). '/dashboard', 'LA\DashboardController@index');
+	
+	/* ================== Users ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/users', 'LA\UsersController');
+	//Route::get(config('laraadmin.adminRoute') . '/user_dt_ajax', 'LA\UsersController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/user_dt_ajax', 'LA\UsersController@dtajax');
+	
+	/* ================== Uploads ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/uploads', 'LA\UploadsController');
+	Route::post(config('laraadmin.adminRoute') . '/upload_files', 'LA\UploadsController@upload_files');
+	Route::get(config('laraadmin.adminRoute') . '/uploaded_files', 'LA\UploadsController@uploaded_files');
+	Route::post(config('laraadmin.adminRoute') . '/uploads_update_caption', 'LA\UploadsController@update_caption');
+	Route::post(config('laraadmin.adminRoute') . '/uploads_update_filename', 'LA\UploadsController@update_filename');
+	Route::post(config('laraadmin.adminRoute') . '/uploads_update_public', 'LA\UploadsController@update_public');
+	Route::post(config('laraadmin.adminRoute') . '/uploads_delete_file', 'LA\UploadsController@delete_file');
+	
+	/* ================== Roles ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/roles', 'LA\RolesController');
+	Route::get(config('laraadmin.adminRoute') . '/role_dt_ajax', 'LA\RolesController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/save_module_role_permissions/{id}', 'LA\RolesController@save_module_role_permissions');
+	
+	/* ================== Permissions ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/permissions', 'LA\PermissionsController');
+	Route::get(config('laraadmin.adminRoute') . '/permission_dt_ajax', 'LA\PermissionsController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/save_permissions/{id}', 'LA\PermissionsController@save_permissions');
+	
+	/* ================== Departments ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/departments', 'LA\DepartmentsController');
+	Route::get(config('laraadmin.adminRoute') . '/department_dt_ajax', 'LA\DepartmentsController@dtajax');
+	
+	/* ================== Employees ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/employees', 'LA\EmployeesController');
+	//Route::get(config('laraadmin.adminRoute') . '/employee_dt_ajax', 'LA\EmployeesController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/change_password/{id}', 'LA\EmployeesController@change_password');
+	Route::get(config('laraadmin.adminRoute') . '/employee_dt_ajax', 'LA\EmployeesController@dtajax');
+	
+	/* ================== Organizations ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/organizations', 'LA\OrganizationsController');
+	Route::get(config('laraadmin.adminRoute') . '/organization_dt_ajax', 'LA\OrganizationsController@dtajax');
+
+	/* ================== Backups ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/backups', 'LA\BackupsController');
+	Route::get(config('laraadmin.adminRoute') . '/backup_dt_ajax', 'LA\BackupsController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/create_backup_ajax', 'LA\BackupsController@create_backup_ajax');
+	Route::get(config('laraadmin.adminRoute') . '/downloadBackup/{id}', 'LA\BackupsController@downloadBackup');
+	
+		/* ================== Racks ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/racks', 'LA\RacksController');
+	Route::get(config('laraadmin.adminRoute') . '/rack_dt_ajax', 'LA\RacksController@dtajax');
+	Route::resource(config('laraadmin.adminRoute') . '/showkendaraan', 'LA\RacksController@showkendaraan');
+	Route::resource(config('laraadmin.adminRoute') . '/updatekendaraan', 'LA\RacksController@updatekendaraan');
+	Route::resource(config('laraadmin.adminRoute') . '/rackskendaraan', 'LA\RacksController@editkendaraan');	
+	Route::get(config('laraadmin.adminRoute') . '/rackss/insrack', 'LA\RacksController@insrack');
+	Route::get(config('laraadmin.adminRoute') . '/rack_dt_ajax_kendaraan', 'LA\RacksController@dtajaxkendaraan');
+	Route::get(config('laraadmin.adminRoute') .'/rackskendaraanscari', 'LA\RacksController@loadDataracksKendaraan');
+	Route::post(config('laraadmin.adminRoute'). '/bcdsolo', 'LA\RacksController@bcdsolo');
+	//Route::post(config('laraadmin.adminRoute'). '/bcdsolo', 'LA\RacksController@digsig');
+	
+		/* ================== Storages ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/storages', 'LA\StoragesController');
+	Route::get(config('laraadmin.adminRoute') . '/storage_dt_ajax', 'LA\StoragesController@dtajax');
+	
+		/* ================== Kendaraans ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/kendaraans', 'LA\KendaraansController');
+	Route::get(config('laraadmin.adminRoute') . '/kendaraan_dt_ajax', 'LA\KendaraansController@dtajax');
+	Route::get(config('laraadmin.adminRoute') .'/kendaraanscari', 'LA\KendaraansController@loadDataKendaraan');
+	Route::get(config('laraadmin.adminRoute') .'/kendaraanspajak', 'LA\KendaraansController@loadDatapajak');
+	Route::get(config('laraadmin.adminRoute'). '/print/{id}', 'LA\KendaraansController@print');
+	Route::post(config('laraadmin.adminRoute'). '/printsolo', 'LA\KendaraansController@printsolo');
+	
+	/* ================== Kibbs ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/kibbs', 'LA\KibbsController');
+	Route::get(config('laraadmin.adminRoute') . '/kibb_dt_ajax', 'LA\KibbsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') .'/kibbscari', 'LA\KibbsController@loadDatakibbs');
+	
+	/* ================== Kibcs ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/kibcs', 'LA\KibcsController');
+	Route::get(config('laraadmin.adminRoute') . '/kibc_dt_ajax', 'LA\KibcsController@dtajax');
+
+	
+		/* ================== Logacts ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/logacts', 'LA\LogactsController');
+	Route::get(config('laraadmin.adminRoute') . '/logact_dt_ajax', 'LA\LogactsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/loaddata', 'LA\LogactsController@loadDatalog');
+		
+	/* ================== Loanings ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/loanings', 'LA\LoaningsController');
+	Route::get(config('laraadmin.adminRoute') . '/loaning_dt_ajax', 'LA\LoaningsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/dipinjam_dt_ajax', 'LA\LoaningsController@dtajaxdipinjam');
+	Route::get(config('laraadmin.adminRoute') . '/loanings/pengembalian/{id}', 'LA\LoaningsController@pengembalian');
+
+	/* ================== Verifikasi_kendaraans ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/verifikasi_kendaraans', 'LA\Verifikasi_kendaraansController');
+	Route::get(config('laraadmin.adminRoute') . '/notverifikasikendaraanscari', 'LA\Verifikasi_kendaraansController@loadDataNotverif');
+	Route::get(config('laraadmin.adminRoute') . '/verifikasikendaraanscari', 'LA\Verifikasi_kendaraansController@loadDataverif');
+	Route::get(config('laraadmin.adminRoute') . '/verifikasi_kendaraans/verif/{id}', 'LA\Verifikasi_kendaraansController@verif');
+	Route::get(config('laraadmin.adminRoute') . '/verifikasi_kendaraans/verifpajak/{id}', 'LA\Verifikasi_kendaraansController@verifpajak');
+
+
+	/* ================== Pengajuan_loanings ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/pengajuan_loanings', 'LA\Pengajuan_loaningsController');
+	Route::get(config('laraadmin.adminRoute') . '/pengajuan_loaning_dt_ajax', 'LA\Pengajuan_loaningsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/verif_pengajuan_loan/verif_loan/{id}', 'LA\Pengajuan_loaningsController@verif_pengajuan_loan');
+
+	/* ================== Rekonsiliasi_opds ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/rekonsiliasi_opds', 'LA\Rekonsiliasi_opdsController');
+	Route::get(config('laraadmin.adminRoute') . '/rekonsiliasi_opd_dt_ajax', 'LA\Rekonsiliasi_opdsController@dtajax');
+
+	/* ================== Rekonsiliasi_asets ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/rekonsiliasi_asets', 'LA\Rekonsiliasi_asetsController');
+	Route::get(config('laraadmin.adminRoute') . '/rekonsiliasi_aset_dt_ajax', 'LA\Rekonsiliasi_asetsController@dtajax');
+	//Route::get(config('laraadmin.adminRoute') . '/rekonsiliasi_aset_datarekon/{tahunp}/{kdbidang}/{kdunit}/{kdsub}', 'LA\Rekonsiliasi_asetsController@loadDatarekonaset');
+	Route::get(config('laraadmin.adminRoute') . '/rekonsiliasi_aset_datarekon/{saldoawals}/{saldoakhirs}/{kdbidang}/{kdunit}/{kdsub}', 'LA\Rekonsiliasi_asetsController@loadDatarekonaset');
+	Route::get(config('laraadmin.adminRoute') .'/rekonsiliasi_aset_getunit/{id}', 'LA\Rekonsiliasi_asetsController@unit')->name('rekonsiliasi_opds_unit.unit');
+	Route::get(config('laraadmin.adminRoute') .'/rekonsiliasi_aset_getsubunit/{id}/{ids}', 'LA\Rekonsiliasi_asetsController@subunit')->name('rekonsiliasi_opds_subunit.subunit');
+	Route::get(config('laraadmin.adminRoute') .'/rekonsiliasi_aset_getupb/{id}/{ids}/{idss}', 'LA\Rekonsiliasi_asetsController@upb')->name('rekonsiliasi_opds_upb.upb');
+
+
+	/* ================== Rekonsiliasi_asets ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/rekonsiliasi_asets', 'LA\Rekonsiliasi_asetsController');
+	Route::get(config('laraadmin.adminRoute') . '/rekonsiliasi_aset_dt_ajax', 'LA\Rekonsiliasi_asetsController@dtajax');
+});

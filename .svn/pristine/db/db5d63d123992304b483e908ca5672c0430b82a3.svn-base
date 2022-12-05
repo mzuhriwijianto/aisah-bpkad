@@ -1,0 +1,266 @@
+@extends("la.layouts.app")
+
+@section("contentheader_title", "Loanings")
+@section("contentheader_description", "Loanings listing")
+@section("section", "Loanings")
+@section("sub_section", "Listing")
+@section("htmlheader_title", "Loanings Listing")
+
+@section("headerElems")
+@la_access("Loanings", "create")
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Loaning</button>
+@endla_access
+@endsection
+
+@section("main-content")
+
+<ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
+		<li class="active"><a role="tab" data-toggle="tab" class="active" href="#Entry" data-target="#tab-info"><i class="fa fa-barcode"></i> Entry</a></li>
+		<li class=""><a role="tab" data-toggle="tab" href="#lists" data-target="#tab-timeline"><i class="fa fa-clock-o"></i>Lists BPKB</a></li>
+		<li class=""><a role="tab" data-toggle="tab" href="#listspeminjaman" data-target="#tab-timeline1"><i class="fa fa-clock-o"></i>Lists Peminjaman</a></li>
+</ul>
+
+<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active fade in" id="tab-info">
+			<div class="tab-content">
+				<div class="panel infolist">					
+						<div class="row">
+						<br/>
+							<div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+							<div class="small-box bg-orange">
+								<div class="inner">
+								  <h3></h3>
+								  <p>BPKB Dipinjam</p>
+								  <div class="box-body">
+						
+								  </div>
+								</div>
+								<div class="icon">
+								  <i class="ion ion-ios-cart"></i>
+								</div>
+								<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+							 </div>							
+							</div>
+							<div class="col-lg-3 col-xs-6">
+								  <div class="small-box bg-black text-white">
+									<div class="inner">
+									  <h3></h3>
+									  <p>Kendaraan Dihapus</p>
+									  <div class="box-body">
+							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-trash-a"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>							
+							 </div>	
+							<div class="col-lg-3 col-xs-6">
+								 <div class="small-box bg-aqua">
+									<div class="inner">
+									  <h3></h3>
+									  <p>BPKB Telah Diisi</p>
+									  <div class="box-body">							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-clipboard"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>
+							  </div>
+							  <div class="col-lg-3 col-xs-6">
+								  <div class="small-box bg-red">
+									<div class="inner">
+									  <h3></h3>
+									  <p>BPKB Belum Diisi</p>
+									  <div class="box-body">
+							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-ios-pulse"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>							
+							  </div>
+													  
+						</div>
+				</div>
+			</div>
+		</div>
+
+		<div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline">
+				<div class="timeline-item">
+					<div class="panel-default panel-heading">
+						<h4>Lists BPKB</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi / Nomor BPKB</h2>
+							<input type="text" name="search" id="search" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-aqua">
+								<th>No.</th>
+								<th>Dept</th>								
+								<th>IDPemda</th>							
+								<th>Merk</th>							
+								<th>Type</th>							
+								<th>CC</th>													
+								<th>Kondisi</th>
+								<th>Nomor Polisi</th>
+								<th>Nomor BPKB</th>																																																						
+								<th>Rack No</th>							
+								<th>Storage Name</th>
+								<th>Pajak</th>	
+								<th>Pemegang Kendaraan</th>
+								<th>Tgl Peminjaman</th>							
+								<th>Peminjam</th>							
+								<th>No. HP Peminjam</th>							
+								<th>Verifikator</th>							
+								<th>Status Peminjaman</th>																													
+								<th>Pengembalian</th>																													
+								<th>Action</th>							
+							 </tr>
+							</thead>
+							<tbody id="tbody1">	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+		<div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline1">
+				<div class="timeline-item">
+					<div class="panel-default panel-heading">
+						<h4>Lists Peminjaman</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi / Nomor BPKB</h2>
+							<input type="text" name="search" id="search1" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example2" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-aqua">
+								<th>No.</th>
+								<th>Dept</th>								
+								<th>IDPemda</th>							
+								<th>Merk</th>							
+								<th>Type</th>							
+								<th>CC</th>													
+								<th>Kondisi</th>
+								<th>Nomor Polisi</th>
+								<th>Nomor BPKB</th>																																																						
+								<th>Rack No</th>							
+								<th>Storage Name</th>
+								<th>Pajak</th>	
+								<th>Pemegang Kendaraan</th>
+								<th>Tgl Peminjaman</th>							
+								<th>Peminjam</th>							
+								<th>No. HP Peminjam</th>							
+								<th>Verifikator</th>							
+								<th>Status Peminjaman</th>																													
+								<th>Pengembalian</th>																													
+								<th>Action</th>							
+							 </tr>
+							</thead>
+							<tbody id="tbody2">	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+</div>
+
+@la_access("Loanings", "create")
+<div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Add Loaning</h4>
+			</div>
+			{!! Form::open(['action' => 'LA\LoaningsController@store', 'id' => 'loaning-add-form']) !!}
+			<div class="modal-body">
+				<div class="box-body">
+                    {{--@la_form($module)--}}
+					
+					{{--
+					@la_input($module, 'loan_code')
+					@la_input($module, 'idpemda')
+					--}}
+
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				{!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!}
+			</div>
+			{!! Form::close() !!}
+		</div>
+	</div>
+</div>
+@endla_access
+
+@endsection
+
+@push('scripts')
+<script>
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"{{ url(config('laraadmin.adminRoute') . '/loaning_dt_ajax') }}",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        //$('tbody').html(data.table_data);
+						$('#tbody1').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });	
+		
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"{{ url(config('laraadmin.adminRoute') . '/dipinjam_dt_ajax') }}",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        //$('tbody').html(data.table_data);
+						$('#tbody2').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search1', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });			
+</script>
+@endpush

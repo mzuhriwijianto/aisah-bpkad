@@ -1,0 +1,208 @@
+@extends("la.layouts.app")
+
+@section("contentheader_title")
+	<a href="{{ url(config('laraadmin.adminRoute') . '/kibcs') }}">Kibc</a> :
+@endsection
+@section("contentheader_description", $kibc->$view_col)
+@section("section", "Kibcs")
+@section("section_url", url(config('laraadmin.adminRoute') . '/kibcs'))
+@section("sub_section", "Edit")
+
+@section("htmlheader_title", "Kibcs Edit : ".$kibc->$view_col)
+@section("main-content")
+
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<!-- mapbox -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+<script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css" type="text/css"/>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+
+ 
+<div class="box">
+	<div class="box-header">
+		
+	</div>
+	<div class="box-body">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				{{-- {!! Form::model($kibc, ['route' => [config('laraadmin.adminRoute') . '.kibcs.update', $kibc->id ], 'method'=>'PUT', 'id' => 'kibc-edit-form']) !!} --}}
+					{{--@la_form($module)--}}
+					
+					{{-- @la_input($module, 'koordx') --}}
+					{{-- @la_input($module, 'koordy') --}}
+					{{-- @la_input($module, 'lokasi_tanah') --}}					
+                    <br>
+					<form method="POST" action="/admin/kibcs/{{$kibc->id}}" accept-charset="UTF-8" id="kibc-edit-form">
+					<input name="_method" type="hidden" value="PUT">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+										
+					<div class="form-group"><label for="koordx">KoordX* :</label>
+						<input id = "koordx" class="form-control" placeholder="Enter KoordX" data-rule-minlength="5" data-rule-maxlength="100" required="1" name="koordx" type="text" value="{{ $kibc->koordx }}" readonly>
+					</div>
+					<div class="form-group"><label for="koordy">KoordY* :</label>
+						<input id = "koordy" class="form-control" placeholder="Enter KoordY" data-rule-minlength="5" data-rule-maxlength="100" required="1" name="koordy" type="text" value="{{ $kibc->koordy }}" readonly>
+					</div>
+					<!--<div class="form-group"><label for="lokasi_tanah">Lokasi Tanah :</label>
+						<input class="form-control" placeholder="Enter Lokasi Tanah" data-rule-maxlength="256" name="lokasi_tanah" type="text" value="">
+					</div>-->
+					
+                    <br>
+
+				<div class="panel infolist">
+					<div class="panel-default panel-heading">
+						<h4>Maps</h4>
+					</div>
+					
+					<div class="panel-body">					
+						<div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline">	
+							<ul class="timeline timeline-inverse">						
+								<li>
+									<div class="timeline-item">
+										<div class="embed-responsive embed-responsive-16by9" id ="mapboxdiv" bannerid="yyy">								  
+										<div id ="mapid" style = " height: 500px; "></div>
+										
+<script language="JavaScript" type="text/javascript">
+//location
+//convert to json
+var marker = new mapboxgl.Marker();
+var locgedung = {
+	'type': 'geojson',
+	'data': {
+			'type': 'FeatureCollection',
+			'features': [
+			{
+				// feature for Mapbox DC
+				'type': 'Feature',
+				'geometry': {
+							'type': 'Point',
+							'coordinates': [
+											{{ $kibc->koordy }},{{ $kibc->koordx }}
+											]
+				},
+				
+				'properties': {
+							'title': {{ $kibc->idpemda }},
+							'fillColor':'#669933',
+							'icon': 'circle',
+							'marker-color': '#44bcd8'
+							}
+			}
+			]
+	}
+};								  
+
+//init	
+var tengah = [{{ $kibc->koordy }},{{ $kibc->koordx }}];
+
+mapboxgl.accessToken = 'pk.eyJ1IjoicHJhdG9tb2dpbGFuZyIsImEiOiJjazhvNXFva20xMTgwM2ZtaW9nb2h1a2gzIn0.5Xu4wSzifGPaMy5F-taUkA';
+var mymap = new mapboxgl.Map({
+	container: 'mapid',
+	//style: 'mapbox://styles/mapbox/dark-v9',
+	style: 'mapbox://styles/mapbox/satellite-v9',
+	//style: 'mapbox://styles/mapbox/satellite-streets-v10',
+	center: tengah,
+	zoom: 15,
+	attributionControl: false
+});
+
+//control
+var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        });
+mymap.addControl(geocoder);
+mymap.addControl(new mapboxgl.NavigationControl());
+//locate user
+mymap.addControl(
+		new mapboxgl.GeolocateControl({
+			positionOptions: {
+								enableHighAccuracy: true
+							},
+			trackUserLocation: true
+		})
+);
+//end
+							
+	//addpoint				
+	mymap.on('click', function(e) {
+				var popup = new mapboxgl.Popup()
+						  .setLngLat(e.lngLat)
+						  .setHTML("Lokasi Baru")
+						  .addTo(mymap);
+				//marker.setLngLat([{{ $kibc->koordx }},{{ $kibc->koordy }}]);
+			document.getElementById('koordx').value = e.lngLat.lat.toString();
+			document.getElementById('koordy').value = e.lngLat.lng.toString();								
+});			
+//end
+
+mymap.on('load', function() {
+							mymap.addSource('points', locgedung);							
+							mymap.addLayer({
+											'id': 'points',
+											'type': 'symbol',
+											'source': 'points',
+											'layout': {
+													// get the icon name from the source's "icon" property
+													// concatenate the name to get an icon from the style's sprite sheet
+													'icon-image': ['concat', ['get', 'icon'], '-15'],
+													// get the title name from the source's "title" property
+													'text-field': ['get', 'title'],
+													'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+													'text-offset': [0, 0.6],
+													'text-anchor': 'top'
+													},
+											'paint': {
+														'icon-color': '#44bcd8',
+														'icon-halo-color': '#44bcd8',
+														'icon-halo-width': 2
+													}
+											});
+});
+//end
+
+
+
+</script>
+										
+										</div>
+									</div>
+								</li>							
+							</ul>						
+						</div>
+					</div>
+				</div>
+
+
+					<div class="form-group">
+					{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <a href="{{ url(config('laraadmin.adminRoute') . '/kibcs') }}" class="btn btn-default pull-right">Cancel</a>
+					</div>
+				</form>
+				{!! Form::close() !!}
+			</div>
+		</div>
+	</div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+$(function () {
+	$("#kibc-edit-form").validate({
+		
+	});
+});
+</script>
+@endpush

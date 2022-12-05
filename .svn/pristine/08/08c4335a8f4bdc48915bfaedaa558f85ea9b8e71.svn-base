@@ -1,0 +1,150 @@
+<?php $__env->startSection("contentheader_title", "Kibbs"); ?>
+<?php $__env->startSection("contentheader_description", "Kibbs listing"); ?>
+<?php $__env->startSection("section", "Kibbs"); ?>
+<?php $__env->startSection("sub_section", "Listing"); ?>
+<?php $__env->startSection("htmlheader_title", "Kibbs Listing"); ?>
+
+<?php $__env->startSection("headerElems"); ?>
+<?php if(LAFormMaker::la_access("Kibbs", "create")) { ?>
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Kibb</button>
+<?php } ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div class="box box-success">
+	<!--<div class="box-header"></div>-->
+	<div class="timeline-item">
+					<div class="panel-default">
+						<h4>Lists</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi / Nomor BPKB</h2>
+							<input type="text" name="search" id="search" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-green">
+								<th>id</th>							
+								<th>Dept</th>							
+								<th>IDPemda</th>							
+								<th>Merk</th>							
+								<th>Type</th>							
+								<th>CC</th>							
+								<th>Bahan</th>							
+								<th>Kondisi</th>							
+								<th>Tgl_Perolehan</th>							
+								<th>Nomor Rangka</th>							
+								<th>Nomor Mesin</th>							
+								<th>Nomor Polisi</th>							
+								<th>Nomor BPKB</th>													
+								<th>BPKB File</th>							
+								<th>Rack No</th>							
+								<th>Storage Name</th>							
+								<th>STNK File</th>							
+								<th>Pajak</th>							
+								<th>File Foto Kendaraan</th>							
+								<th>Action</th>							
+							 </tr>
+							</thead>
+							<tbody>	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+	</div>
+</div>
+
+<?php if(LAFormMaker::la_access("Kibbs", "create")) { ?>
+<div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Add Kibb</h4>
+			</div>
+			<?php echo Form::open(['action' => 'LA\KibbsController@store', 'id' => 'kibb-add-form']); ?>
+
+			<div class="modal-body">
+				<div class="box-body">
+                    <?php echo LAFormMaker::form($module); ?>
+					
+					<?php /*
+					<?php echo LAFormMaker::input($module, 'idpemda'); ?>
+					<?php echo LAFormMaker::input($module, 'merk'); ?>
+					<?php echo LAFormMaker::input($module, 'type'); ?>
+					<?php echo LAFormMaker::input($module, 'cc'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_perolehan'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_rangka'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_mesin'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_polisi'); ?>
+					<?php echo LAFormMaker::input($module, 'nomor_bpkb'); ?>
+					<?php echo LAFormMaker::input($module, 'harga'); ?>
+					<?php echo LAFormMaker::input($module, 'kd_bidang'); ?>
+					<?php echo LAFormMaker::input($module, 'kd_unit'); ?>
+					<?php echo LAFormMaker::input($module, 'kd_sub'); ?>
+					<?php echo LAFormMaker::input($module, 'kd_upb'); ?>
+					<?php echo LAFormMaker::input($module, 'bpkb_file'); ?>
+					<?php echo LAFormMaker::input($module, 'rack_no'); ?>
+					<?php echo LAFormMaker::input($module, 'storage_no'); ?>
+					*/ ?>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<?php echo Form::submit( 'Submit', ['class'=>'btn btn-success']); ?>
+
+			</div>
+			<?php echo Form::close(); ?>
+
+		</div>
+	</div>
+</div>
+<?php } ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('styles'); ?>
+<link rel="stylesheet" type="text/css" href="<?php echo e(asset('la-assets/plugins/datatables/datatables.min.css')); ?>"/>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script type="text/javascript">
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"<?php echo e(url(config('laraadmin.adminRoute') . '/kibbscari')); ?>",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('tbody').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

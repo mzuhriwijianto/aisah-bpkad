@@ -1,0 +1,156 @@
+<?php $__env->startSection("contentheader_title"); ?>
+	<a href="<?php echo e(url(config('laraadmin.adminRoute') . '/loanings')); ?>">Loaning</a> :
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection("contentheader_description", $loaning->$view_col); ?>
+<?php $__env->startSection("section", "Loanings"); ?>
+<?php $__env->startSection("section_url", url(config('laraadmin.adminRoute') . '/loanings')); ?>
+<?php $__env->startSection("sub_section", "Edit"); ?>
+
+<?php $__env->startSection("htmlheader_title", "Loanings Edit : ".$loaning->$view_col); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div class="box">
+	<div class="box-header">
+		
+	</div>
+	<div class="box-body">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+			<?php echo Form::model($loaning, ['route' => [config('laraadmin.adminRoute') . '.loanings.update', $loaning->id ], 'method'=>'PUT', 'id' => 'loaning-edit-form']); ?>
+
+					<?php /* <?php echo LAFormMaker::form($module); ?> */ ?>
+					
+					<?php /* <?php echo LAFormMaker::input($module, 'lend_by'); ?>
+					<?php echo LAFormMaker::input($module, 'lend_date'); ?>
+					<?php echo LAFormMaker::input($module, 'lend_phone'); ?> 
+					<?php echo LAFormMaker::input($module, 'lend_status'); ?> */ ?>
+                    <br>
+					<?php /* <?php echo LAFormMaker::input($module, 'lend_estimation'); ?> */ ?>
+					
+				<?php /* Form::close() */ ?>
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+			<form method="POST" action="/admin/loanings/<?php echo e($loaning->id); ?>" accept-charset="UTF-8" 
+				id="loaning-edit-form" novalidate="novalidate">
+				<input name="_method" type="hidden" value="PUT">
+				<input name="_token" type="hidden" value="<?php echo e(csrf_token()); ?>">							
+					<div class="form-group">
+						<label for="idpemda">IDPemda :</label>
+						<input class="form-control" placeholder="Enter IDPemda" data-rule-maxlength="256" name="idpemda" id = "idpemda" type="text" value = "<?php echo e($loaning->idpemda); ?>" readonly>
+					</div>
+					
+					<div class="form-group">
+						<label for="lend_by">Barcode BPKB</label>
+						<input class="form-control" placeholder="Barcode" name="bcdbpkb" id = "bcdbpkb" type="text" value="" >
+					</div>	
+										
+					<div class="form-group">
+						<label for="lend_by">Nama Peminjam</label>
+						<input  class="form-control" placeholder="Nama Peminjam" name="lend_by" type="text" value="<?php echo e($loaning->lend_by); ?>" required />
+					</div>
+					<div class="form-group">
+						<label for="lend_phone">No.HP Peminjam</label>
+						<input class="form-control" placeholder="No.HP Peminjam" name="lend_phone" type="text" value="<?php echo e($loaning->lend_phone); ?>" required />
+					</div> 
+					<?php foreach($data as $datas): ?>
+					<div class="form-group">
+						<label for="lend_by">Nomor BPKB</label>
+						<input class="form-control" placeholder="" name="nobpkb" id = "nobpkb" type="text" value="<?php echo e($datas->nomor_bpkb); ?>" >
+					</div>	
+					<div class="form-group">
+						<label for="lend_by">Tanggal Peminjaman :</label>
+						<input class="form-control" placeholder="Tanggal Peminjaman" name="lend_date" type="text" value="<?php echo e(date('d-m-Y',strtotime($datas->tgl_peminjaman))); ?>" readonly>
+					</div>
+					<div class="form-group">
+						<label for="lend_estimation">Tanggal Pengembalian :</label>
+							<input class="form-control" placeholder="Tanggal Pengembalian" name="lend_estimation" type="text" value="<?php echo e(date('d-m-Y',strtotime($datas->tgl_pengembalian))); ?>" readonly />	
+					</div>
+					<?php endforeach; ?>
+					<div class="form-group"><label for="lend_status"></label>
+					<!--<select class="form-control select2-hidden-accessible" data-placeholder="Enter lend_status" rel="select2" name="lend_status" tabindex="-1" aria-hidden="true">
+					<option value="DIPINJAM" selected="selected">DIPINJAM</option>
+					<option value="DIKEMBALIKAN">DIKEMBALIKAN</option>
+					</select>-->
+					<?php /* <?php echo LAFormMaker::input($module, 'lend_status'); ?> */ ?>
+					</div>
+					<br>
+					<div class="form-group">
+						<div class="form-group" >
+						<div id = "updatebutton">
+							<?php echo Form::submit( 'Update', ['class'=>'btn btn-success']); ?>
+
+						</div>
+						<div>
+							<button class="btn btn-default pull-right"><a href="<?php echo e(url(config('laraadmin.adminRoute') . '/loanings')); ?>">Cancel</a></button>
+						</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+$("#updatebutton").hide();
+
+
+$(document).ready(function () {
+	$(document).on('keyup', '#bcdbpkb', function () {
+		var inputidpemda = document.getElementById("idpemda").value;
+		var inputbcd = document.getElementById("bcdbpkb").value;	
+		var inputnobpkb = document.getElementById("nobpkb").value;	
+					
+		if(inputbcd.length = 17) {
+			setTimeout(function() {
+		  //your code to be executed after 1 second
+				//if (inputbcd.length = 17) { 
+					if (inputidpemda == inputbcd){
+						if(inputnobpkb != ""){
+							$("#updatebutton").show();
+						}
+						
+					} else {
+						//alert('Data not found');
+						$("#updatebutton").hide();
+						 document.getElementById("bcdbpkb").value = '';
+						 document.getElementById("bcdbpkb").focus();
+					}
+				//}else{
+					//alert('Data not found');
+				//}
+			}, 100);
+		}else{
+			document.getElementById("bcdbpkb").value = '';
+		}
+	});	
+});
+
+
+function validate() {
+	//cleartxt();
+	$('input[id="chkbox1"]:checked').each(function() {				
+			var selectedidpemda = new Array();			
+			selectedidpemda.push(this.value);
+			var data = selectedidpemda+ ',';
+			document.getElementById('searchsolo').value += data;
+	});
+}
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

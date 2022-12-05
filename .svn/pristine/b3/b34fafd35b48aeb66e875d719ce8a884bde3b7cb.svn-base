@@ -1,0 +1,136 @@
+<?php $__env->startSection('htmlheader_title'); ?>
+	Employee View
+<?php $__env->stopSection(); ?>
+
+
+<?php $__env->startSection('main-content'); ?>
+<div id="page-content" class="profile2">
+		<div class="bg-success clearfix">
+			<div class="col-md-10">
+				<div class="row">
+					<div class="col-md-8">
+						<div class="profile-icon text-primary">
+							<i class="fa <?php echo e($module->fa_icon); ?> fa-15x"><?php echo e($module->name); ?></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-1">
+				<div class="dats1"><span class="bg-blue">User</span>
+				<div class="label2"><?php echo e(Auth::user()->name); ?></div></div>
+				<div class="dats1"><span class="bg-blue">From</span>
+					<div class="label2">
+						 <?php echo e(Module::userlogin()->dept_name); ?></div>
+					</div>
+			</div>
+			<div class="col-sm-1 actions rightPane">
+				<?php if(LAFormMaker::la_access("Employees", "edit")) { ?>
+					<a href="<?php echo e(url(config('laraadmin.adminRoute') . '/employees/'.$employee->id.'/edit')); ?>" class="btn btn-xs btn-edit btn-default"><i class="fa fa-pencil"></i></a><br>
+				<?php } ?>
+				
+				<?php if(LAFormMaker::la_access("Employees", "delete")) { ?>
+					<?php echo e(Form::open(['route' => [config('laraadmin.adminRoute') . '.employees.destroy', $employee->id], 'method' => 'delete', 'style'=>'display:inline'])); ?>
+
+						<button class="btn btn-default btn-delete btn-xs" type="submit"><i class="fa fa-times"></i></button>
+					<?php echo e(Form::close()); ?>
+
+				<?php } ?>
+			</div>
+
+		</div>		
+	</div>
+
+	<ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
+		<li class=""><a href="<?php echo e(url(config('laraadmin.adminRoute') . '/employees')); ?>" data-toggle="tooltip" data-placement="right" title="Back to Employees"><i class="fa fa-chevron-left"></i></a></li>
+		<li class="active"><a role="tab" data-toggle="tab" class="active" href="#tab-info" data-target="#tab-info"><i class="fa fa-bars"></i> General Info</a></li>
+		<?php if($employee->id == Auth::user()->id || Entrust::hasRole("SUPER_ADMIN")): ?>
+			<li class=""><a role="tab" data-toggle="tab" href="#tab-account-settings" data-target="#tab-account-settings"><i class="fa fa-key"></i> Account settings</a></li>
+		<?php endif; ?>
+	</ul>
+
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active fade in" id="tab-info">
+			<div class="tab-content">
+				<div class="panel infolist">
+					<div class="panel-default panel-heading">
+						<h4>General Info</h4>
+					</div>
+					<div class="panel-body">
+						<?php echo LAFormMaker::display($module, 'name'); ?>
+						<?php echo LAFormMaker::display($module, 'designation'); ?>
+						<?php echo LAFormMaker::display($module, 'mobile'); ?>
+						<?php echo LAFormMaker::display($module, 'mobile2'); ?>
+						<?php echo LAFormMaker::display($module, 'email'); ?>
+						<?php echo LAFormMaker::display($module, 'dept'); ?>
+						<?php echo LAFormMaker::display($module, 'city'); ?>
+						<?php echo LAFormMaker::display($module, 'address'); ?>
+						<?php echo LAFormMaker::display($module, 'date_birth'); ?>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<?php if($employee->id == Auth::user()->id || Entrust::hasRole("SUPER_ADMIN")): ?>
+		<div role="tabpanel" class="tab-pane fade" id="tab-account-settings">
+			<div class="tab-content">
+				<form action="<?php echo e(url(config('laraadmin.adminRoute') . '/change_password/'.$employee->id)); ?>" id="password-reset-form" class="general-form dashed-row white" method="post" accept-charset="utf-8">
+					<?php echo e(csrf_field()); ?>
+
+					<div class="panel">
+						<div class="panel-default panel-heading">
+							<h4>Account settings</h4>
+						</div>
+						<div class="panel-body">
+							<?php if(count($errors) > 0): ?>
+								<div class="alert alert-danger">
+									<ul>
+										<?php foreach($errors->all() as $error): ?>
+											<li><?php echo e($error); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php endif; ?>
+							<?php if(Session::has('success_message')): ?>
+								<p class="alert <?php echo e(Session::get('alert-class', 'alert-success')); ?>"><?php echo e(Session::get('success_message')); ?></p>
+							<?php endif; ?>
+							<div class="form-group">
+								<label for="password" class=" col-md-2">Password</label>
+								<div class=" col-md-10">
+									<input type="password" name="password" value="" id="password" class="form-control" placeholder="Password" autocomplete="off" required="required" data-rule-minlength="6" data-msg-minlength="Please enter at least 6 characters.">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="password_confirmation" class=" col-md-2">Retype password</label>
+								<div class=" col-md-10">
+									<input type="password" name="password_confirmation" value="" id="password_confirmation" class="form-control" placeholder="Retype password" autocomplete="off" required="required" data-rule-equalto="#password" data-msg-equalto="Please enter the same value again.">
+								</div>
+							</div>
+						</div>
+						<div class="panel-footer">
+							<button type="submit" class="btn btn-primary"><span class="fa fa-check-circle"></span> Change Password</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<?php endif; ?>
+	</div>
+	</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+$(function () {
+	<?php if($employee->id == Auth::user()->id || Entrust::hasRole("SUPER_ADMIN")): ?>
+	$('#password-reset-form').validate({
+		
+	});
+	<?php endif; ?>
+});
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('la.layouts.app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

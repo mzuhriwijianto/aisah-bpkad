@@ -1,0 +1,92 @@
+<?php $__env->startSection("contentheader_title"); ?>
+	<a href="<?php echo e(url(config('laraadmin.adminRoute') . '/pengajuan_loanings')); ?>">Pengajuan loaning</a> :
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection("contentheader_description", $pengajuan_loaning->$view_col); ?>
+<?php $__env->startSection("section", "Pengajuan loanings"); ?>
+<?php $__env->startSection("section_url", url(config('laraadmin.adminRoute') . '/pengajuan_loanings')); ?>
+<?php $__env->startSection("sub_section", "Edit"); ?>
+
+<?php $__env->startSection("htmlheader_title", "Pengajuan loanings Edit : ".$pengajuan_loaning->$view_col); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div class="box">
+	<div class="box-header">
+		
+	</div>
+	<div class="box-body">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<?php echo Form::model($pengajuan_loaning, ['route' => [config('laraadmin.adminRoute') . '.pengajuan_loanings.update', $pengajuan_loaning->id ], 'method'=>'PUT', 'id' => 'pengajuan_loaning-edit-form']); ?>
+
+					<?php /*<?php echo LAFormMaker::form($module); ?>*/ ?>
+					
+					
+					<?php /*<?php echo LAFormMaker::input($module, 'idpemda'); ?>*/ ?>
+					
+					<?php /*<?php echo LAFormMaker::input($module, 'peminjam'); ?>										
+					<?php echo LAFormMaker::input($module, 'status'); ?>
+					<?php echo LAFormMaker::input($module, 'dept'); ?>
+					<?php echo LAFormMaker::input($module, 'alasan_peminjaman'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_peminjaman'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_pengembalian'); ?>*/ ?>
+					<?php echo LAFormMaker::input($module, 'alasan_peminjaman'); ?>
+					<div class="form-group">
+						<label for="tgl_peminjaman">tgl_peminjaman :</label>
+						<div class="input-group date">
+							<input class="form-control" placeholder="Enter tgl_peminjaman" name="tgl_peminjaman" type="text" value="">
+							<span class="input-group-addon">
+								<span class="fa fa-calendar"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="tgl_pengembalian">tgl_pengembalian :</label>
+						<div class="input-group date">
+							<input class="form-control" placeholder="Enter tgl_pengembalian" name="tgl_pengembalian" type="text" value="">
+							<span class="input-group-addon">
+								<span class="fa fa-calendar"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+					<select class="form-control select2-hidden-accessible" data-placeholder="Enter Nomor Polisi" rel="select2" name="idpemda">
+						<?php foreach($data as $datas): ?>
+						<option value="<?php echo e($datas->idpemda); ?>"><?php echo e($datas->nomor_polisi); ?> - <?php echo e($datas->merk); ?></option>						
+						<?php endforeach; ?>
+					</select>
+					</div>
+                    <br>
+					<div class="form-group">
+						<?php echo Form::submit( 'Update', ['class'=>'btn btn-success']); ?> <button class="btn btn-default pull-right"><a href="<?php echo e(url(config('laraadmin.adminRoute') . '/pengajuan_loanings')); ?>">Cancel</a></button>
+					</div>
+				<?php echo Form::close(); ?>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+$(function () {
+	$("#pengajuan_loaning-edit-form").validate({
+		
+	});
+});
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

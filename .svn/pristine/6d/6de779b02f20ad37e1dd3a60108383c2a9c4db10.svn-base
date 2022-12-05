@@ -1,0 +1,147 @@
+@extends("la.layouts.app")
+
+@section("contentheader_title", "Kibbs")
+@section("contentheader_description", "Kibbs listing")
+@section("section", "Kibbs")
+@section("sub_section", "Listing")
+@section("htmlheader_title", "Kibbs Listing")
+
+@section("headerElems")
+@la_access("Kibbs", "create")
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Kibb</button>
+@endla_access
+@endsection
+
+@section("main-content")
+
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<div class="box box-success">
+	<!--<div class="box-header"></div>-->
+	<div class="timeline-item">
+					<div class="panel-default">
+						<h4>Lists</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi / Nomor BPKB</h2>
+							<input type="text" name="search" id="search" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-green">
+								<th>id</th>							
+								<th>Dept</th>							
+								<th>IDPemda</th>							
+								<th>Merk</th>							
+								<th>Type</th>							
+								<th>CC</th>							
+								<th>Bahan</th>							
+								<th>Kondisi</th>							
+								<th>Tgl_Perolehan</th>							
+								<th>Nomor Rangka</th>							
+								<th>Nomor Mesin</th>							
+								<th>Nomor Polisi</th>							
+								<th>Nomor BPKB</th>													
+								<th>BPKB File</th>							
+								<th>Rack No</th>							
+								<th>Storage Name</th>							
+								<th>STNK File</th>							
+								<th>Pajak</th>							
+								<th>File Foto Kendaraan</th>							
+								<th>Action</th>							
+							 </tr>
+							</thead>
+							<tbody>	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+	</div>
+</div>
+
+@la_access("Kibbs", "create")
+<div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Add Kibb</h4>
+			</div>
+			{!! Form::open(['action' => 'LA\KibbsController@store', 'id' => 'kibb-add-form']) !!}
+			<div class="modal-body">
+				<div class="box-body">
+                    @la_form($module)
+					
+					{{--
+					@la_input($module, 'idpemda')
+					@la_input($module, 'merk')
+					@la_input($module, 'type')
+					@la_input($module, 'cc')
+					@la_input($module, 'tgl_perolehan')
+					@la_input($module, 'nomor_rangka')
+					@la_input($module, 'nomor_mesin')
+					@la_input($module, 'nomor_polisi')
+					@la_input($module, 'nomor_bpkb')
+					@la_input($module, 'harga')
+					@la_input($module, 'kd_bidang')
+					@la_input($module, 'kd_unit')
+					@la_input($module, 'kd_sub')
+					@la_input($module, 'kd_upb')
+					@la_input($module, 'bpkb_file')
+					@la_input($module, 'rack_no')
+					@la_input($module, 'storage_no')
+					--}}
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				{!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!}
+			</div>
+			{!! Form::close() !!}
+		</div>
+	</div>
+</div>
+@endla_access
+
+@endsection
+
+@push('styles')
+<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/datatables/datatables.min.css') }}"/>
+@endpush
+
+@push('scripts')
+<script type="text/javascript">
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"{{ url(config('laraadmin.adminRoute') . '/kibbscari') }}",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('tbody').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+</script>
+@endpush

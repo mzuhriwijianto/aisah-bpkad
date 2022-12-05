@@ -1,0 +1,180 @@
+<?php $__env->startSection("contentheader_title", "Kendaraans"); ?>
+<?php $__env->startSection("contentheader_description", "Kendaraans listing"); ?>
+<?php $__env->startSection("section", "Kendaraans"); ?>
+<?php $__env->startSection("sub_section", "Listing"); ?>
+<?php $__env->startSection("htmlheader_title", "Kendaraans Listing"); ?>
+
+<?php $__env->startSection("headerElems"); ?>
+<?php if(LAFormMaker::la_access("Kendaraans", "create")) { ?>
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Kendaraan</button>
+<?php } ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
+		<li class="active"><a role="tab" data-toggle="tab" class="active" href="#Entry" data-target="#tab-info"><i class="fa fa-barcode"></i> Entry</a></li>
+		<li class=""><a role="tab" data-toggle="tab" href="#lists" data-target="#tab-timeline"><i class="fa fa-clock-o"></i>Lists</a></li>
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active fade in" id="tab-info">
+			<div class="tab-content">
+				<div class="panel infolist">					
+						<div class="row">
+						<br/>
+							<div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+							<div class="small-box bg-orange">
+								<div class="inner">
+								  <h3><?php echo e($kendaraan); ?></h3>
+								  <p>Total Kendaraan</p>
+								  <div class="box-body">
+						
+								  </div>
+								</div>
+								<div class="icon">
+								  <i class="ion ion-ios-cart"></i>
+								</div>
+								<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+							 </div>							
+							</div>
+							<div class="col-lg-3 col-xs-6">
+								  <div class="small-box bg-black text-white">
+									<div class="inner">
+									  <h3><?php echo e($kendaraanhapus); ?></h3>
+									  <p>Kendaraan Dihapus</p>
+									  <div class="box-body">
+							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-trash-a"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>							
+							 </div>	
+							<div class="col-lg-3 col-xs-6">
+								 <div class="small-box bg-aqua">
+									<div class="inner">
+									  <h3><?php echo e($bpkbnotempty); ?></h3>
+									  <p>BPKB Telah Diisi</p>
+									  <div class="box-body">							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-clipboard"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>
+							  </div>
+							  <div class="col-lg-3 col-xs-6">
+								  <div class="small-box bg-red">
+									<div class="inner">
+									  <h3><?php echo e($bpkbempty); ?></h3>
+									  <p>BPKB Belum Diisi</p>
+									  <div class="box-body">
+							
+									  </div>
+									</div>
+									<div class="icon">
+									  <i class="ion ion-ios-pulse"></i>
+									</div>
+									<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+								  </div>							
+							  </div>
+													  
+						</div>
+				</div>
+			</div>
+		</div>
+
+		<div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline">
+				<div class="timeline-item">
+					<div class="panel-default panel-heading">
+						<h4>Lists</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi / Nomor BPKB</h2>
+							<input type="text" name="search" id="search" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-aqua">
+								<th>id</th>
+								<th>Dept</th>								
+								<th>IDPemda</th>							
+								<th>Merk</th>							
+								<th>Type</th>							
+								<th>CC</th>							
+								<th>Bahan</th>							
+								<th>Kondisi</th>							
+								<th>Tgl_Perolehan</th>							
+								<th>Nomor Rangka</th>							
+								<th>Nomor Mesin</th>							
+								<th>Nomor Polisi</th>							
+								<th>Nomor BPKB</th>													
+								<th>BPKB File</th>							
+								<th>Rack No</th>							
+								<th>Storage Name</th>							
+								<th>STNK File</th>							
+								<th>Pajak</th>							
+								<th>File Foto Kendaraan</th>							
+								<th>Pemegang Kendaraan</th>							
+								<th>Action</th>							
+							 </tr>
+							</thead>
+							<tbody>	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+</div>
+	
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"<?php echo e(url(config('laraadmin.adminRoute') . '/kendaraanscari')); ?>",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('tbody').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

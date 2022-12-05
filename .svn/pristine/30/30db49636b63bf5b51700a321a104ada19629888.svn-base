@@ -1,0 +1,1021 @@
+<?php
+/**
+ * Controller genrated using LaraAdmin
+ * Help: http://laraadmin.com
+ */
+
+namespace App\Http\Controllers\LA;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Http\Requests;
+use Auth;
+use DB;
+use Validator;
+use Datatables;
+use Collective\Html\FormFacade as Form;
+use Dwij\Laraadmin\Models\Module;
+use Dwij\Laraadmin\Models\ModuleFields;
+
+use App\Models\Rekonsiliasi_aset;
+
+class Rekonsiliasi_asetsController extends Controller
+{
+	public $show_action = true;
+	public $view_col = 'id_rek_aset';
+	public $listing_cols = ['id', 'id_rek_aset'];
+	
+	public function __construct() {
+		// Field Access of Listing Columns
+		if(\Dwij\Laraadmin\Helpers\LAHelper::laravel_ver() == 5.3) {
+			$this->middleware(function ($request, $next) {
+				$this->listing_cols = ModuleFields::listingColumnAccessScan('Rekonsiliasi_asets', $this->listing_cols);
+				return $next($request);
+			});
+		} else {
+			$this->listing_cols = ModuleFields::listingColumnAccessScan('Rekonsiliasi_asets', $this->listing_cols);
+		}
+	}
+			
+	/**
+	 * Display a listing of the Rekonsiliasi_asets.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index(){
+		$module = Module::get('Rekonsiliasi_asets');
+		$bidang = Module::populatebidang()->get();
+		//dd($request->input('bidang'));
+		if(Module::hasAccess($module->id)) {
+			return View('la.rekonsiliasi_asets.index', [
+				'show_actions' => $this->show_action,
+				'listing_cols' => $this->listing_cols,
+				'module' => $module,
+				'bidang' => $bidang
+			]);
+		} else {
+            return redirect(config('laraadmin.adminRoute')."/");
+        }
+	}
+	
+	public function unit($id){
+		$unit = Module::populateunit($id)->pluck('nm_unit', 'kd_unit');
+		return json_encode($unit);
+	}
+	
+	public function subunit($id,$ids){
+		$subunit = Module::populatesubunit($id,$ids)->pluck('nm_sub_unit', 'kd_sub');
+		return json_encode($subunit);
+	}
+	public function upb($id,$ids,$idss){
+		$upb = Module::populateupb($id,$ids,$idss)->pluck('nm_upb', 'kd_upb');
+		return json_encode($upb);
+	}
+
+	/**
+	 * Show the form for creating a new rekonsiliasi_aset.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function create()
+	{
+		//
+	}
+
+	/**
+	 * Store a newly created rekonsiliasi_aset in database.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store(Request $request)
+	{
+		if(Module::hasAccess("Rekonsiliasi_asets", "create")) {
+		
+			$rules = Module::validateRules("Rekonsiliasi_asets", $request);
+			
+			$validator = Validator::make($request->all(), $rules);
+			
+			if ($validator->fails()) {
+				return redirect()->back()->withErrors($validator)->withInput();
+			}
+			
+			$insert_id = Module::insert("Rekonsiliasi_asets", $request);
+			
+			return redirect()->route(config('laraadmin.adminRoute') . '.rekonsiliasi_asets.index');
+			
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
+
+	/**
+	 * Display the specified rekonsiliasi_aset.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show($id)
+	{
+		if(Module::hasAccess("Rekonsiliasi_asets", "view")) {
+			
+			$rekonsiliasi_aset = Rekonsiliasi_aset::find($id);
+			if(isset($rekonsiliasi_aset->id)) {
+				$module = Module::get('Rekonsiliasi_asets');
+				$module->row = $rekonsiliasi_aset;
+				
+				return view('la.rekonsiliasi_asets.show', [
+					'module' => $module,
+					'view_col' => $this->view_col,
+					'no_header' => true,
+					'no_padding' => "no-padding"
+				])->with('rekonsiliasi_aset', $rekonsiliasi_aset);
+			} else {
+				return view('errors.404', [
+					'record_id' => $id,
+					'record_name' => ucfirst("rekonsiliasi_aset"),
+				]);
+			}
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
+
+	/**
+	 * Show the form for editing the specified rekonsiliasi_aset.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function edit($id)
+	{
+		if(Module::hasAccess("Rekonsiliasi_asets", "edit")) {			
+			$rekonsiliasi_aset = Rekonsiliasi_aset::find($id);
+			if(isset($rekonsiliasi_aset->id)) {	
+				$module = Module::get('Rekonsiliasi_asets');
+				
+				$module->row = $rekonsiliasi_aset;
+				
+				return view('la.rekonsiliasi_asets.edit', [
+					'module' => $module,
+					'view_col' => $this->view_col,
+				])->with('rekonsiliasi_aset', $rekonsiliasi_aset);
+			} else {
+				return view('errors.404', [
+					'record_id' => $id,
+					'record_name' => ucfirst("rekonsiliasi_aset"),
+				]);
+			}
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
+
+	/**
+	 * Update the specified rekonsiliasi_aset in storage.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		if(Module::hasAccess("Rekonsiliasi_asets", "edit")) {
+			
+			$rules = Module::validateRules("Rekonsiliasi_asets", $request, true);
+			
+			$validator = Validator::make($request->all(), $rules);
+			
+			if ($validator->fails()) {
+				return redirect()->back()->withErrors($validator)->withInput();;
+			}
+			
+			$insert_id = Module::updateRow("Rekonsiliasi_asets", $request, $id);
+			
+			return redirect()->route(config('laraadmin.adminRoute') . '.rekonsiliasi_asets.index');
+			
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
+
+	/**
+	 * Remove the specified rekonsiliasi_aset from storage.
+	 *
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id)
+	{
+		if(Module::hasAccess("Rekonsiliasi_asets", "delete")) {
+			Rekonsiliasi_aset::find($id)->delete();
+			
+			// Redirecting to index() method
+			return redirect()->route(config('laraadmin.adminRoute') . '.rekonsiliasi_asets.index');
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
+/* load data rekon admin*/
+//public function loadDatarekonaset(Request $request,$tahunp,$bidang,$unit,$subunit){
+	public function loadDatarekonaset(Request $request,$saldoawal,$saldoakhir,$bidang,$unit,$subunit){
+	if(Module::hasAccess("Rekonsiliasi_asets", "view")) {
+				$kdbidang = Module::kdopd()->kd_bidang;
+				$kdunit = Module::kdopd()->kd_unit;
+				$kdsub = Module::kdopd()->kd_sub;
+				$kdupb = Module::kdopd()->kd_upb;				
+				//$tahun = $tahunp;
+				//$tahunint = (int)$tahun;
+				//$tahunsldawal = $tahunint-1;
+				//$D2sldawal = $tahunint-1 .'-12-31';
+				//$awal = $tahun .'-01-01';
+				//$akhir = $tahun.'-12-31';
+				$tahun = (int)date('Y', strtotime($saldoakhir));
+				$tahunsldawal = (int)$tahun-1;
+				$awal = date('Y-m-d', strtotime($saldoawal));
+				$akhir = date('Y-m-d', strtotime($saldoakhir));
+
+			if ($request->ajax()) {
+					$output = '';
+					$query = $request->get('query');
+
+						if($kdbidang == 99 || $kdbidang == 0 ){
+														
+							$saldoawal  = DB::unprepared( DB::raw( 
+									"
+									create TABLE #temp108(kd_bidangA varchar(2),kd_unitA varchar(2),kd_subA varchar(2),kd_upbA varchar(2),
+									kd_aset varchar(2),kd_aset0 varchar(2),Kd_Aset1 varchar(2),Kd_Aset2 varchar(2),
+									Nm_Aset0 varchar(50),Nm_Aset1 varchar(50),Nm_Aset2 varchar(50),Harga money)
+									
+									BEGIN	
+										insert into #temp108 exec ".Module::bmd().".Rpt108RekapBarangKeNeraca_S_2020
+											
+											@Tahun = '".$tahunsldawal."',
+											@Kd_Prov = '13',
+											@Kd_Kab_Kota = '16',
+											@Kd_Bidang = N'".$bidang."',
+											@Kd_Unit = N'".$unit."',
+											@Kd_Sub = N'".$subunit."',
+											@Kd_UPB = N'%',
+											@D2 = N'".$awal."'
+									END																																																			
+									") 			
+								);
+							$saldoakhir  = DB::unprepared( DB::raw( 
+									"
+									create TABLE #temp108akhir(kd_bidangA varchar(2),kd_unitA varchar(2),kd_subA varchar(2),kd_upbA varchar(2),
+									kd_aset varchar(2),kd_aset0 varchar(2),Kd_Aset1 varchar(2),Kd_Aset2 varchar(2),
+									Nm_Aset0 varchar(50),Nm_Aset1 varchar(50),Nm_Aset2 varchar(50),Harga money)
+
+									BEGIN	
+										insert into #temp108akhir exec ".Module::bmd().".Rpt108RekapBarangKeNeraca_S_2020
+											
+											@Tahun = '".$tahun."',
+											@Kd_Prov = '13',
+											@Kd_Kab_Kota = '16',
+											@Kd_Bidang = N'".$bidang."',
+											@Kd_Unit = N'".$unit."',
+											@Kd_Sub =  N'".$subunit."',
+											@Kd_UPB =  N'%',
+											@D2 = N'".$akhir."'
+									END																																																			
+									") 			
+								);
+							$pengadaan = DB::unprepared(DB::raw(
+										"
+										create table #mmpengadaan (
+										Kd_Aset1 varchar(2),Kd_Aset2 varchar(2),Kd_Aset3 varchar(2),Kd_Aset4 varchar(2),Kd_Aset5 varchar(2),Kd_BidangA varchar(2), Kd_UnitA varchar(2), Kd_SubA varchar(2),
+										Nm_Bidang varchar(50),Nm_Unit varchar(50), Nm_Sub_Unit varchar(50), Nm_UPB varchar(255),
+										Nm_Aset5 varchar(255), tahun varchar(4),Jn_PBJ varchar(1), 
+										Jumlah money, Harga money, Total money,
+										Nm_Unit_Pengguna varchar(255), Keterangan varchar(255)
+										)
+
+										BEGIN	
+										insert into #mmpengadaan exec ".Module::bmd().".RptDPB_s
+											
+											@Tahun = '".$tahun."',
+											@Kd_Prov = '13',
+											@Kd_Kab_Kota = '16',
+											@Kd_Bidang = N'".$bidang."',
+											@Kd_Unit = N'".$unit."',
+											@Kd_Sub = N'".$subunit."',
+											@Kd_UPB = N'%',
+											@D1 = '".$awal."',
+											@D2 = '".$akhir."'
+										END
+										")							
+								);
+							$mutasi = DB::unprepared(DB::raw(
+							"
+							--execute mutasi
+								create table #mutasi (
+								Kd_Bidang varchar(2),Kd_Unit varchar(2),Kd_Sub varchar(2),Kd_UPB varchar(2),Kd_Pemilik varchar(2),
+								Kd_Aset varchar(2),Kd_Aset0 varchar(2),Kd_Aset1 varchar(2),Kd_Aset2 varchar(2),
+								jml_Awal money,harga_awal money,jml_tambah int,Hrg_Tambah money,jml_Kurang int,Hrg_Kurang money,jml_akhir int,Hrg_Akhir money
+								)	
+
+								BEGIN	
+									insert into #mutasi exec ".Module::bmd().".Rpt108RekapMutasiBarang_S
+												
+										@Tahun = '".$tahun."',
+										@Kd_Prov = N'13',
+										@Kd_Kab_Kota = N'16',
+										@Kd_Bidang = N'".$bidang."',
+										@Kd_Unit = N'".$unit."',
+										@Kd_Sub = N'".$subunit."',
+										@Kd_UPB = N'%',
+										@D1 = '".$awal."',
+										@D2 = '".$akhir."'
+								END
+								")
+							);
+							/* $querypgdbaru = " ----pengadaan baru
+												(select pgdbaru.tahun,pgdbaru.Kd_BidangA,pgdbaru.Kd_UnitA,sum(pgdbaru.totals) as Baru,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+													from
+														(select tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,kd_bidangA,kd_unitA,
+														Nm_Unit,nm_sub_unit,
+														SUM(total) as totals,jn_pbj 
+														from #mmpengadaan  
+														where jn_pbj = 1 and tahun = '".$tahun."'
+														group by tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,Nm_Unit,kd_bidangA,kd_unitA,nm_sub_unit,jn_pbj) pgdbaru
+												join ".Module::bmd().".Ref_Map5_17_108 m108 on 
+												 m108.Kd1 = pgdbaru.Kd_Aset1 and 
+												 m108.Kd2 = pgdbaru.Kd_Aset2 and
+												 m108.Kd3 = pgdbaru.Kd_Aset3 and
+												 m108.kd4 = pgdbaru.Kd_Aset4 and
+												 m108.Kd5 = pgdbaru.Kd_Aset5
+												 group by pgdbaru.tahun,pgdbaru.Kd_BidangA,pgdbaru.Kd_UnitA,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+												) pgdbarus on 
+												(pgdbarus.Kd_BidangA = neraca.kd_bidangA and
+												pgdbarus.Kd_UnitA = neraca.kd_unitA and
+												pgdbarus.Kd_Aset = neraca.kd_aset and
+												pgdbarus.Kd_Aset0 = neraca.kd_aset0 and
+												pgdbarus.Kd_Aset1 = neraca.kd_aset1 and
+												pgdbarus.Kd_Aset2 = neraca.kd_aset2) 
+												----end pengadaan baru"; */
+							$querypgdbaruupb = " ----pengadaan baru
+												(select pgdbaru.tahun,pgdbaru.Kd_BidangA,pgdbaru.Kd_UnitA,pgdbaru.Kd_subA,sum(pgdbaru.totals) as Baru,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+													from
+														(select tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,kd_bidangA,kd_unitA,Kd_subA,
+														Nm_Unit,nm_sub_unit,
+														SUM(total) as totals,jn_pbj 
+														from #mmpengadaan  
+														where jn_pbj = 1 and tahun = '".$tahun."'
+														group by tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,Nm_Unit,kd_bidangA,kd_unitA,Kd_subA,nm_sub_unit,jn_pbj) pgdbaru
+												join ".Module::bmd().".Ref_Map5_17_108 m108 on 
+												 m108.Kd1 = pgdbaru.Kd_Aset1 and 
+												 m108.Kd2 = pgdbaru.Kd_Aset2 and
+												 m108.Kd3 = pgdbaru.Kd_Aset3 and
+												 m108.kd4 = pgdbaru.Kd_Aset4 and
+												 m108.Kd5 = pgdbaru.Kd_Aset5
+												 group by pgdbaru.tahun,pgdbaru.Kd_BidangA,pgdbaru.Kd_UnitA,pgdbaru.Kd_subA,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+												) pgdbarus on 
+												(pgdbarus.Kd_BidangA = neraca.kd_bidangA and
+												pgdbarus.Kd_UnitA = neraca.kd_unitA and
+												pgdbarus.Kd_subA = neraca.kd_subA and
+												pgdbarus.Kd_Aset = neraca.kd_aset and
+												pgdbarus.Kd_Aset0 = neraca.kd_aset0 and
+												pgdbarus.Kd_Aset1 = neraca.kd_aset1 and
+												pgdbarus.Kd_Aset2 = neraca.kd_aset2) 
+												----end pengadaan baru";
+							$querypgdkap = "---pengadaan kap
+												(select pgdkap.tahun,pgdkap.Kd_BidangA,pgdkap.Kd_UnitA,pgdkap.kd_subA,sum(pgdkap.totals) as kap,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+													from
+														(select tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,kd_bidangA,kd_unitA,kd_subA,
+														Nm_Unit,nm_sub_unit,
+														SUM(total) as totals,jn_pbj 
+														from #mmpengadaan  
+														where jn_pbj = 2 and tahun = '".$tahun."'
+														group by tahun,Kd_Aset1,Kd_Aset2,Kd_Aset3,Kd_Aset4,Kd_Aset5,Nm_Unit,kd_bidangA,kd_unitA,kd_subA,nm_sub_unit,jn_pbj) pgdkap
+												join ".Module::bmd().".Ref_Map5_17_108 m108 on 
+												 m108.Kd1 = pgdkap.Kd_Aset1 and 
+												 m108.Kd2 = pgdkap.Kd_Aset2 and
+												 m108.Kd3 = pgdkap.Kd_Aset3 and
+												 m108.kd4 = pgdkap.Kd_Aset4 and
+												 m108.Kd5 = pgdkap.Kd_Aset5
+												 group by pgdkap.tahun,pgdkap.Kd_BidangA,pgdkap.Kd_UnitA,pgdkap.kd_subA,m108.Kd_Aset,m108.Kd_Aset0,m108.Kd_Aset1,m108.Kd_Aset2
+												) pgdkaps on 
+												(pgdkaps.Kd_BidangA = neraca.kd_bidangA and
+												pgdkaps.Kd_UnitA = neraca.kd_unitA and
+												pgdkaps.Kd_subA = neraca.kd_subA and
+												pgdkaps.Kd_Aset = neraca.kd_aset and
+												pgdkaps.Kd_Aset0 = neraca.kd_aset0 and
+												pgdkaps.Kd_Aset1 = neraca.kd_aset1 and
+												pgdkaps.Kd_Aset2 = neraca.kd_aset2) 
+											--end pengadaan kap";
+							$queryBOS = "----BOS
+											(
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kibb.kd_bidang as kd_bidang,kibb.kd_unit as kd_unit,kibb.kd_sub as kd_sub,kibb.Kd_Aset8,
+																kibb.Kd_Aset80,kibb.Kd_Aset81 as kdaset1,kibb.Kd_Aset82 as kdaset2,kibb.Kd_Aset83,
+																sum(kibb.harga) as BOS
+
+													FROM       ".Module::bmd().".Ta_KIB_B kibb
+													where year(kibb.tgl_perolehan) = '".$tahun."' and kibb.Asal_usul like '%BOS%' and kibb.Kd_Pemilik = 12
+													group by kibb.kd_bidang,kibb.kd_unit,kibb.kd_sub,kibb.Kd_Aset8,
+																kibb.Kd_Aset80,kibb.Kd_Aset81,kibb.Kd_Aset82,kibb.Kd_Aset83,
+																kibb.Tgl_Perolehan) kibb
+													group by kibb.kd_bidang,kibb.kd_unit,kibb.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kiba.kd_bidang as kd_bidang,kiba.kd_unit as kd_unit,kiba.kd_sub as kd_sub,kiba.Kd_Aset8,
+																kiba.Kd_Aset80,kiba.Kd_Aset81 as kdaset1,kiba.Kd_Aset82 as kdaset2,kiba.Kd_Aset83,
+																sum(kiba.harga) as BOS
+
+													FROM     ".Module::bmd().".Ta_KIB_A kiba
+													where year(kiba.tgl_perolehan) = '".$tahun."' and kiba.Asal_usul like '%BOS%' and kiba.Kd_Pemilik = 12
+													group by kiba.kd_bidang,kiba.kd_unit,kiba.kd_sub,kiba.Kd_Aset8,
+																kiba.Kd_Aset80,kiba.Kd_Aset81,kiba.Kd_Aset82,kiba.Kd_Aset83,
+																kiba.Tgl_Perolehan) kiba
+													group by kiba.kd_bidang,kiba.kd_unit,kiba.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kibc.kd_bidang as kd_bidang,kibc.kd_unit as kd_unit,kibc.kd_sub as kd_sub,kibc.Kd_Aset8,
+																kibc.Kd_Aset80,kibc.Kd_Aset81 as kdaset1,kibc.Kd_Aset82 as kdaset2,kibc.Kd_Aset83,
+																sum(kibc.harga) as BOS
+
+													FROM      ".Module::bmd().".Ta_KIB_C kibc
+													where year(kibc.tgl_perolehan) = '".$tahun."' and kibc.Asal_usul like '%BOS%' and kibc.Kd_Pemilik = 12
+													group by kibc.kd_bidang,kibc.kd_unit,kibc.kd_sub,kibc.Kd_Aset8,
+																kibc.Kd_Aset80,kibc.Kd_Aset81,kibc.Kd_Aset82,kibc.Kd_Aset83,
+																kibc.Tgl_Perolehan) kibc
+													group by kibc.kd_bidang,kibc.kd_unit,kibc.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kibd.kd_bidang as kd_bidang,kibd.kd_unit as kd_unit,kibd.kd_sub as kd_sub,kibd.Kd_Aset8,
+																kibd.Kd_Aset80,kibd.Kd_Aset81 as kdaset1,kibd.Kd_Aset82 as kdaset2,kibd.Kd_Aset83,
+																sum(kibd.harga) as BOS
+
+													FROM     ".Module::bmd().".Ta_KIB_D kibd 
+													where year(kibd.tgl_perolehan) = '".$tahun."' and kibd.Asal_usul like '%BOS%' and kibd.Kd_Pemilik = 12
+													group by kibd.kd_bidang,kibd.kd_unit,kibd.kd_sub,kibd.Kd_Aset8,
+																kibd.Kd_Aset80,kibd.Kd_Aset81,kibd.Kd_Aset82,kibd.Kd_Aset83,
+																kibd.Tgl_Perolehan) kibd
+													group by kibd.kd_bidang,kibd.kd_unit,kibd.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kibe.kd_bidang,kibe.kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kibe.kd_bidang as kd_bidang,kibe.kd_unit as kd_unit,kibe.kd_sub as kd_sub,kibe.Kd_Aset8,
+																kibe.Kd_Aset80,kibe.Kd_Aset81 as kdaset1,kibe.Kd_Aset82 as kdaset2,kibe.Kd_Aset83,
+																sum(kibe.harga) as BOS
+
+													FROM  ".Module::bmd().".Ta_KIB_e kibe
+													where year(kibe.tgl_perolehan) = '".$tahun."' and kibe.Asal_usul like '%BOS%' and kibe.Kd_Pemilik = 12
+													group by kibe.kd_bidang,kibe.kd_unit,kibe.kd_sub,kibe.Kd_Aset8,
+																kibe.Kd_Aset80,kibe.Kd_Aset81,kibe.Kd_Aset82,kibe.Kd_Aset83,
+																kibe.Tgl_Perolehan) kibe
+													group by kibe.kd_bidang,kibe.kd_unit,kibe.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(BOS) as BOS from (
+													SELECT		kibf.kd_bidang as kd_bidang,kibf.kd_unit as kd_unit,kibf.kd_sub as kd_sub,kibf.Kd_Aset8,
+																kibf.Kd_Aset80,kibf.Kd_Aset81 as kdaset1,kibf.Kd_Aset82 as kdaset2,kibf.Kd_Aset83,
+																sum(kibf.harga) as BOS
+
+													FROM  ".Module::bmd().".Ta_KIB_F kibf
+													where year(kibf.tgl_perolehan) = '".$tahun."' and kibf.Asal_usul like '%BOS%' and kibf.Kd_Pemilik = 12
+													group by kibf.kd_bidang,kibf.kd_unit,kibf.kd_sub,kibf.Kd_Aset8,
+																kibf.Kd_Aset80,kibf.Kd_Aset81,kibf.Kd_Aset82,kibf.Kd_Aset83,
+																kibf.Tgl_Perolehan) kibf
+													group by kibf.kd_bidang,kibf.kd_unit,kibf.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+													) BOSs on
+													(BOSs.Kd_Bidang = neraca.kd_bidangA and
+													BOSs.Kd_Unit = neraca.kd_unitA and
+													BOSs.kd_sub = neraca.kd_subA and
+													BOSs.kd_aset8 = neraca.kd_aset and
+													BOSs.kd_aset80 = neraca.kd_aset0 and
+													BOSs.kdaset1 = neraca.kd_aset1 and
+													BOSs.kdaset2 = neraca.kd_aset2)
+													--------end BOS";
+							$queryHIBAH = "
+											(
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kibb.kd_bidang as kd_bidang,kibb.kd_unit as kd_unit,kibb.kd_sub as kd_sub,kibb.Kd_Aset8,
+																kibb.Kd_Aset80,kibb.Kd_Aset81 as kdaset1,kibb.Kd_Aset82 as kdaset2,kibb.Kd_Aset83,
+																sum(kibb.harga) as HIBAH
+
+													FROM       ".Module::bmd().".Ta_KIB_B kibb
+													where year(kibb.tgl_perolehan) = '".$tahun."' and kibb.Asal_usul like '%HIBAH%' and kibb.Kd_Pemilik = 12
+													group by kibb.kd_bidang,kibb.kd_unit,kibb.kd_sub,kibb.Kd_Aset8,
+																kibb.Kd_Aset80,kibb.Kd_Aset81,kibb.Kd_Aset82,kibb.Kd_Aset83,
+																kibb.Tgl_Perolehan) kibb
+													group by kibb.kd_bidang,kibb.kd_unit,kibb.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kiba.kd_bidang as kd_bidang,kiba.kd_unit as kd_unit,kiba.kd_sub as kd_sub,kiba.Kd_Aset8,
+																kiba.Kd_Aset80,kiba.Kd_Aset81 as kdaset1,kiba.Kd_Aset82 as kdaset2,kiba.Kd_Aset83,
+																sum(kiba.harga) as HIBAH
+
+													FROM     ".Module::bmd().".Ta_KIB_A kiba
+													where year(kiba.tgl_perolehan) = '".$tahun."' and kiba.Asal_usul like '%HIBAH%' and kiba.Kd_Pemilik = 12
+													group by kiba.kd_bidang,kiba.kd_unit,kiba.kd_sub,kiba.Kd_Aset8,
+																kiba.Kd_Aset80,kiba.Kd_Aset81,kiba.Kd_Aset82,kiba.Kd_Aset83,
+																kiba.Tgl_Perolehan) kiba
+													group by kiba.kd_bidang,kiba.kd_unit,kiba.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kibc.kd_bidang as kd_bidang,kibc.kd_unit as kd_unit,kibc.kd_sub as kd_sub,kibc.Kd_Aset8,
+																kibc.Kd_Aset80,kibc.Kd_Aset81 as kdaset1,kibc.Kd_Aset82 as kdaset2,kibc.Kd_Aset83,
+																sum(kibc.harga) as HIBAH
+
+													FROM      ".Module::bmd().".Ta_KIB_C kibc
+													where year(kibc.tgl_perolehan) = '".$tahun."' and kibc.Asal_usul like '%HIBAH%' and kibc.Kd_Pemilik = 12
+													group by kibc.kd_bidang,kibc.kd_unit,kibc.kd_sub,kibc.Kd_Aset8,
+																kibc.Kd_Aset80,kibc.Kd_Aset81,kibc.Kd_Aset82,kibc.Kd_Aset83,
+																kibc.Tgl_Perolehan) kibc
+													group by kibc.kd_bidang,kibc.kd_unit,kibc.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kibd.kd_bidang as kd_bidang,kibd.kd_unit as kd_unit,kibd.kd_sub as kd_sub,kibd.Kd_Aset8,
+																kibd.Kd_Aset80,kibd.Kd_Aset81 as kdaset1,kibd.Kd_Aset82 as kdaset2,kibd.Kd_Aset83,
+																sum(kibd.harga) as HIBAH
+
+													FROM     ".Module::bmd().".Ta_KIB_D kibd 
+													where year(kibd.tgl_perolehan) = '".$tahun."' and kibd.Asal_usul like '%HIBAH%' and kibd.Kd_Pemilik = 12
+													group by kibd.kd_bidang,kibd.kd_unit,kibd.kd_sub,kibd.Kd_Aset8,
+																kibd.Kd_Aset80,kibd.Kd_Aset81,kibd.Kd_Aset82,kibd.Kd_Aset83,
+																kibd.Tgl_Perolehan) kibd
+													group by kibd.kd_bidang,kibd.kd_unit,kibd.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kibe.kd_bidang,kibe.kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kibe.kd_bidang as kd_bidang,kibe.kd_unit as kd_unit,kibe.kd_sub as kd_sub,kibe.Kd_Aset8,
+																kibe.Kd_Aset80,kibe.Kd_Aset81 as kdaset1,kibe.Kd_Aset82 as kdaset2,kibe.Kd_Aset83,
+																sum(kibe.harga) as HIBAH
+
+													FROM  ".Module::bmd().".Ta_KIB_e kibe
+													where year(kibe.tgl_perolehan) = '".$tahun."' and kibe.Asal_usul like '%HIBAH%' and kibe.Kd_Pemilik = 12
+													group by kibe.kd_bidang,kibe.kd_unit,kibe.kd_sub,kibe.Kd_Aset8,
+																kibe.Kd_Aset80,kibe.Kd_Aset81,kibe.Kd_Aset82,kibe.Kd_Aset83,
+																kibe.Tgl_Perolehan) kibe
+													group by kibe.kd_bidang,kibe.kd_unit,kibe.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2
+
+													union all
+
+													select kd_bidang,kd_unit,kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2,SUM(HIBAH) as HIBAH from (
+													SELECT		kibf.kd_bidang as kd_bidang,kibf.kd_unit as kd_unit,kibf.kd_sub as kd_sub,kibf.Kd_Aset8,
+																kibf.Kd_Aset80,kibf.Kd_Aset81 as kdaset1,kibf.Kd_Aset82 as kdaset2,kibf.Kd_Aset83,
+																sum(kibf.harga) as HIBAH
+
+													FROM  ".Module::bmd().".Ta_KIB_F kibf
+													where year(kibf.tgl_perolehan) = '".$tahun."' and kibf.Asal_usul like '%HIBAH%' and kibf.Kd_Pemilik = 12
+													group by kibf.kd_bidang,kibf.kd_unit,kibf.kd_sub,kibf.Kd_Aset8,
+																kibf.Kd_Aset80,kibf.Kd_Aset81,kibf.Kd_Aset82,kibf.Kd_Aset83,
+																kibf.Tgl_Perolehan) kibf
+													group by kibf.kd_bidang,kibf.kd_unit,kibf.kd_sub,Kd_Aset8,Kd_Aset80,kdaset1,kdaset2) hibahs on 
+													(hibahs.Kd_Bidang = neraca.kd_bidangA and
+													hibahs.Kd_Unit = neraca.kd_unitA and
+													hibahs.kd_sub = neraca.kd_subA and
+													hibahs.kd_aset8 = neraca.kd_aset and
+													hibahs.kd_aset80 = neraca.kd_aset0 and
+													hibahs.kdaset1 = neraca.kd_aset1 and
+													hibahs.kdaset2 = neraca.kd_aset2)
+													-----end HIBAH ";
+							$queryMUTASI = " -----MUTASI
+										(select * from #mutasi where Kd_Pemilik = 12) mutasi on 
+													(mutasi.Kd_Bidang = neraca.kd_bidangA and
+													mutasi.Kd_Unit = neraca.kd_unitA and
+													mutasi.Kd_Sub = neraca.kd_subA and
+													mutasi.Kd_Aset = neraca.kd_aset and
+													mutasi.Kd_Aset0 = neraca.kd_aset0 and
+													mutasi.Kd_Aset1 = neraca.kd_aset1 and
+													mutasi.Kd_Aset2 = neraca.kd_aset2)
+											-----end MUTASI";
+							$queryKOREKSI = "---- koreksi
+													(
+													select extra.Kd_Riwayat,extra.Kd_Bidang,extra.Kd_Unit,extra.Kd_Sub,
+													extra.Kd_Aset8,extra.Kd_Aset80,extra.Kd_Aset81,extra.Kd_Aset82,
+													sum(extra.Penambahan) as Penambahan,sum(extra.pengurangan) as Pengurangan from(
+														select Kd_Riwayat,Kd_Bidang,Kd_Unit,Kd_Sub,
+														Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82,
+														CASE WHEN hargakoreksi > hargainduk THEN hargakoreksi-hargainduk
+														else 0
+														END AS 'Penambahan',
+														CASE WHEN hargakoreksi < hargainduk THEN hargainduk-hargakoreksi
+														ELSE 0
+														END AS 'pengurangan'
+														 from (
+														select kibbr.kd_riwayat,kibbr.kd_bidang,kibbr.Kd_Unit,kibbr.Kd_Sub,
+														kibbr.Kd_Aset8,kibbr.Kd_Aset80,kibbr.Kd_Aset81,kibbr.kd_aset82,
+														sum(kibbr.harga) as hargakoreksi,
+														sum(kibb.harga) as hargainduk from
+														".Module::bmd().".Ta_KIBBR kibbr inner join ".Module::bmd().".Ta_KIB_B kibb on kibbr.IDPemda = kibb.idpemda
+														where kibbr.Kd_Riwayat = 21 and kibbr.Kd_Pemilik = 12 and YEAR(kibbr.Tgl_Dokumen) = '".$tahun."'
+														group by kibbr.kd_riwayat,kibbr.kd_bidang,kibbr.Kd_Unit,kibbr.Kd_Sub,
+														kibbr.Kd_Aset8,kibbr.Kd_Aset80,kibbr.Kd_Aset81,kibbr.kd_aset82
+
+														union all
+
+														select kibar.kd_riwayat,kibar.kd_bidang,kibar.Kd_Unit,kibar.Kd_Sub,
+														kibar.Kd_Aset8,kibar.Kd_Aset80,kibar.Kd_Aset81,kibar.kd_aset82,
+														sum(kibar.harga) as hargakoreksi,
+														sum(kiba.harga) as hargainduk from
+														".Module::bmd().".Ta_KIBAR kibar inner join ".Module::bmd().".Ta_KIB_A kiba on kibar.IDPemda = kiba.idpemda
+														where kibar.Kd_Riwayat = 21 and kibar.Kd_Pemilik = 12 and YEAR(kibar.Tgl_Dokumen) = '".$tahun."'
+
+														group by kibar.kd_riwayat,kibar.kd_bidang,kibar.Kd_Unit,kibar.Kd_Sub,
+														kibar.Kd_Aset8,kibar.Kd_Aset80,kibar.Kd_Aset81,kibar.kd_aset82
+
+														union all
+
+														select kibcr.kd_riwayat,kibcr.kd_bidang,kibcr.Kd_Unit,kibcr.Kd_Sub,
+														kibcr.Kd_Aset8,kibcr.Kd_Aset80,kibcr.Kd_Aset81,kibcr.kd_aset82,
+														sum(kibcr.harga) as hargakoreksi,
+														sum(kibcr.harga) as hargainduk from
+														".Module::bmd().".Ta_KIBCR kibcr inner join ".Module::bmd().".Ta_KIB_C kibc on kibcr.IDPemda = kibc.idpemda
+														where kibcr.Kd_Riwayat = 21 and kibcr.Kd_Pemilik = 12 and YEAR(kibcr.Tgl_Dokumen) = '".$tahun."'
+
+														group by kibcr.kd_riwayat,kibcr.kd_bidang,kibcr.Kd_Unit,kibcr.Kd_Sub,
+														kibcr.Kd_Aset8,kibcr.Kd_Aset80,kibcr.Kd_Aset81,kibcr.kd_aset82
+
+														union all
+
+														select kibdr.kd_riwayat,kibdr.kd_bidang,kibdr.Kd_Unit,kibdr.Kd_Sub,
+														kibdr.Kd_Aset8,kibdr.Kd_Aset80,kibdr.Kd_Aset81,kibdr.kd_aset82,
+														sum(kibdr.harga) as hargakoreksi,
+														sum(kibdr.harga) as hargainduk from
+														".Module::bmd().".Ta_KIBDR kibdr inner join ".Module::bmd().".Ta_KIB_D kibd on kibdr.IDPemda = kibd.idpemda
+														where kibdr.Kd_Riwayat = 21 and kibdr.Kd_Pemilik = 12 and YEAR(kibdr.Tgl_Dokumen) = '".$tahun."'
+
+														group by kibdr.kd_riwayat,kibdr.kd_bidang,kibdr.Kd_Unit,kibdr.Kd_Sub,
+														kibdr.Kd_Aset8,kibdr.Kd_Aset80,kibdr.Kd_Aset81,kibdr.kd_aset82
+
+														union all
+
+														select kiber.kd_riwayat,kiber.kd_bidang,kiber.Kd_Unit,kiber.Kd_Sub,
+														kiber.Kd_Aset8,kiber.Kd_Aset80,kiber.Kd_Aset81,kiber.kd_aset82,
+														sum(kiber.harga) as hargakoreksi,
+														sum(kiber.harga) as hargainduk from
+														".Module::bmd().".Ta_KIBER kiber inner join ".Module::bmd().".Ta_KIB_E kibe on kiber.IDPemda = kibe.idpemda
+														where kiber.Kd_Riwayat = 21 and kiber.Kd_Pemilik = 12 and YEAR(kiber.Tgl_Dokumen) = '".$tahun."'
+
+														group by kiber.kd_riwayat,kiber.kd_bidang,kiber.Kd_Unit,kiber.Kd_Sub,
+														kiber.Kd_Aset8,kiber.Kd_Aset80,kiber.Kd_Aset81,kiber.kd_aset82) riwayat
+														group by Kd_Riwayat,Kd_Bidang,Kd_Unit,Kd_Sub,Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82,hargakoreksi,hargainduk) extra
+														group by extra.Kd_Riwayat,extra.Kd_Bidang,extra.Kd_Unit,extra.Kd_Sub,
+																extra.Kd_Aset8,extra.Kd_Aset80,extra.Kd_Aset81,extra.Kd_Aset82
+														) koreksi on 
+														koreksi.Kd_Bidang = neraca.kd_bidangA and
+														koreksi.Kd_unit = neraca.kd_unitA and
+														koreksi.Kd_Sub = neraca.kd_subA and
+														koreksi.Kd_Aset8 = neraca.kd_aset and
+														koreksi.Kd_Aset80 = neraca.kd_aset0 and
+														koreksi.Kd_Aset81 = neraca.kd_aset1 and
+														Koreksi.Kd_Aset82 = neraca.kd_aset2
+													----end KOREKSI";
+								$queryEKSTRAKOM = "
+													--------EKSTRAKOM
+													(
+													select kibb.kd_bidang as kdbidang,kibb.Kd_Unit as kdunit,kibb.Kd_Sub as kdsub,
+													kibb.Kd_Aset8 as kdaset8,kibb.Kd_Aset80 as kdaset80,
+													kibb.Kd_Aset81 as kdaset81,kibb.Kd_Aset82 as kdaset82,
+													sum(kibb.harga) as harga
+													from ".Module::bmd().".ta_kib_B kibb 
+													where (kibb.kd_ka = 0 and kibb.Kd_Pemilik = '12' and YEAR(kibb.Tgl_perolehan) = '".$tahun."')
+													group by kibb.kd_bidang,kibb.Kd_Unit,kibb.Kd_Sub,
+													Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+													union all
+
+													select kiba.kd_bidang as kdbidang,kiba.Kd_Unit as kdunit,kiba.Kd_Sub as kdsub,
+													kiba.Kd_Aset8 as kdaset8,kiba.Kd_Aset80 as kdaset80,
+													kiba.Kd_Aset81 as kdaset81,kiba.Kd_Aset82 as kdaset82,
+													sum(kiba.harga) as harga
+													from ".Module::bmd().".ta_kib_B kiba 
+													where (kiba.kd_ka = 0 and kiba.Kd_Pemilik = '12' and YEAR(kiba.Tgl_perolehan) = '".$tahun."')
+													group by kiba.kd_bidang,kiba.Kd_Unit,kiba.Kd_Sub,
+													Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+													union all
+
+													select kibc.kd_bidang as kdbidang,kibc.Kd_Unit as kdunit,kibc.Kd_Sub as kdsub,
+													kibc.Kd_Aset8 as kdaset8,kibc.Kd_Aset80 as kdaset80,
+													kibc.Kd_Aset81 as kdaset81,kibc.Kd_Aset82 as kdaset82,
+													sum(kibc.harga) as harga
+													from ".Module::bmd().".ta_kib_B kibc 
+													where (kibc.kd_ka = 0 and kibc.Kd_Pemilik = '12' and YEAR(kibc.Tgl_perolehan) = '".$tahun."')
+													group by kibc.kd_bidang,kibc.Kd_Unit,kibc.Kd_Sub,
+													Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+													union all
+
+													select kibd.kd_bidang as kdbidang,kibd.Kd_Unit as kdunit,kibd.Kd_Sub as kdsub,
+													kibd.Kd_Aset8 as kdaset8,kibd.Kd_Aset80 as kdaset80,
+													kibd.Kd_Aset81 as kdaset81,kibd.Kd_Aset82 as kdaset82,
+													sum(kibd.harga) as harga
+													from ".Module::bmd().".ta_kib_B kibd 
+													where (kibd.kd_ka = 0 and kibd.Kd_Pemilik = '12' and YEAR(kibd.Tgl_perolehan) = '".$tahun."') 
+													group by kibd.kd_bidang,kibd.Kd_Unit,kibd.Kd_Sub,
+													Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+													union all
+
+													select kibe.kd_bidang as kdbidang,kibe.Kd_Unit as kdunit,kibe.Kd_Sub as kdsub,
+													kibe.Kd_Aset8 as kdaset8,kibe.Kd_Aset80 as kdaset80,
+													kibe.Kd_Aset81 as kdaset81,kibe.Kd_Aset82 as kdaset82,
+													sum(kibe.harga) as harga
+													from ".Module::bmd().".ta_kib_B kibe 
+													where (kibe.kd_ka = 0 and kibe.Kd_Pemilik = '12' and YEAR(kibe.Tgl_perolehan) = '".$tahun."') 
+													group by kibe.kd_bidang,kibe.Kd_Unit,kibe.Kd_Sub,
+													Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+												) extrakomtabel on 
+												(extrakomtabel.kdbidang = neraca.kd_bidangA and
+												extrakomtabel.kdunit = neraca.kd_unitA and
+												extrakomtabel.kdsub = neraca.kd_subA and
+												extrakomtabel.kdaset8 = neraca.kd_aset and
+												extrakomtabel.kdaset80 = neraca.kd_aset0 and
+												extrakomtabel.kdaset81 = neraca.kd_aset1 and
+												extrakomtabel.kdaset82 = neraca.Kd_Aset2)
+												-----end EKSTRAKOM ";
+							$queryRB = "
+							--------RB
+												(
+												select distinct kdbidang,kdunit,kdsub,kdaset8,kdaset80,kdaset81,kdaset82,harga from
+												(
+												select kibb.kd_bidang as kdbidang,kibb.Kd_Unit as kdunit,kibb.Kd_Sub as kdsub,
+												kibb.Kd_Aset8 as kdaset8,kibb.Kd_Aset80 as kdaset80,
+												kibb.Kd_Aset81 as kdaset81,kibb.Kd_Aset82 as kdaset82,
+												sum(kibb.harga) as harga
+												from ".Module::bmd().".ta_kib_B kibb 
+												where (kibb.kondisi = 3 and kibb.Kd_Pemilik = '12')
+												group by kibb.kd_bidang,kibb.Kd_Unit,kibb.Kd_Sub,
+												Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+												union all
+
+												select kiba.kd_bidang as kdbidang,kiba.Kd_Unit as kdunit,kiba.Kd_Sub as kdsub,
+												kiba.Kd_Aset8 as kdaset8,kiba.Kd_Aset80 as kdaset80,
+												kiba.Kd_Aset81 as kdaset81,kiba.Kd_Aset82 as kdaset82,
+												sum(kiba.harga) as harga
+												from ".Module::bmd().".ta_kib_B kiba 
+												where (kiba.kondisi = 3 and kiba.Kd_Pemilik = '12')
+												group by kiba.kd_bidang,kiba.Kd_Unit,kiba.Kd_Sub,
+												Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+												union all
+
+												select kibc.kd_bidang as kdbidang,kibc.Kd_Unit as kdunit,kibc.Kd_Sub as kdsub,
+												kibc.Kd_Aset8 as kdaset8,kibc.Kd_Aset80 as kdaset80,
+												kibc.Kd_Aset81 as kdaset81,kibc.Kd_Aset82 as kdaset82,
+												sum(kibc.harga) as harga
+												from ".Module::bmd().".ta_kib_B kibc 
+												where (kibc.kondisi = 3 and kibc.Kd_Pemilik = '12')
+												group by kibc.kd_bidang,kibc.Kd_Unit,kibc.Kd_Sub,
+												Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+												union all
+
+												select kibd.kd_bidang as kdbidang,kibd.Kd_Unit as kdunit,kibd.Kd_Sub as kdsub,
+												kibd.Kd_Aset8 as kdaset8,kibd.Kd_Aset80 as kdaset80,
+												kibd.Kd_Aset81 as kdaset81,kibd.Kd_Aset82 as kdaset82,
+												sum(kibd.harga) as harga
+												from ".Module::bmd().".ta_kib_B kibd 
+												where (kibd.kondisi = 3 and kibd.Kd_Pemilik = '12') 
+												group by kibd.kd_bidang,kibd.Kd_Unit,kibd.Kd_Sub,
+												Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82
+
+												union all
+
+												select kibe.kd_bidang as kdbidang,kibe.Kd_Unit as kdunit,kibe.Kd_Sub as kdsub,
+												kibe.Kd_Aset8 as kdaset8,kibe.Kd_Aset80 as kdaset80,
+												kibe.Kd_Aset81 as kdaset81,kibe.Kd_Aset82 as kdaset82,
+												sum(kibe.harga) as harga
+												from ".Module::bmd().".ta_kib_B kibe 
+												where (kibe.kondisi = 3 and kibe.Kd_Pemilik = '12') 
+												group by kibe.kd_bidang,kibe.Kd_Unit,kibe.Kd_Sub,
+												Kd_Aset8,Kd_Aset80,Kd_Aset81,Kd_Aset82)rbs
+												group by kdbidang,kdunit,kdsub,kdaset8,kdaset80,kdaset81,kdaset82,harga) 
+												rb on 
+												(rb.kdbidang = neraca.kd_bidangA and
+												rb.kdunit = neraca.kd_unitA and
+												rb.kdsub = neraca.kd_subA and
+												rb.kdaset8 = neraca.kd_aset and
+												rb.kdaset80 = neraca.kd_aset0 and
+												rb.kdaset81 = neraca.kd_aset1 and
+												rb.kdaset82 = neraca.Kd_Aset2)
+												-----end RB ";
+							$queryNERACAAKHIR = "
+											--------neraca akhir
+												#temp108akhir neracaakhir on
+													(neracaakhir.kd_bidangA = neraca.kd_bidangA and
+													neracaakhir.kd_unitA = neraca.kd_unitA and
+													neracaakhir.kd_subA = neraca.kd_subA and
+													neracaakhir.kd_aset = neraca.kd_aset and
+													neracaakhir.kd_aset0 = neraca.kd_aset0 and
+													neracaakhir.Kd_Aset1 = neraca.Kd_Aset1 and
+													neracaakhir.Kd_Aset2 = neraca.Kd_Aset2)
+											----end neraca akhir ";
+							$queryunit = "
+											----unitbmd
+													".Module::bmd().".Ref_Unit refunit on
+													(refunit.Kd_Bidang = neraca.kd_bidangA and
+													refunit.Kd_Unit = neraca.kd_unitA)
+											----end unitbmd										
+							";
+							$querybidangunitsubupb = "
+							---------unitall
+							(SELECT     Ref_Sub_Unit.Kd_Bidang as Kd_Bidang,ref_unit.nm_unit as Nm_Unit, Ref_Sub_Unit.Kd_Unit as Kd_Unit, Ref_Sub_Unit.Kd_Sub as Kd_Sub, Ref_Sub_Unit.Nm_Sub_Unit as Nm_Sub_Unit
+									FROM         ".Module::bmd().".Ref_Bidang as Ref_Bidang INNER JOIN
+												 ".Module::bmd().".Ref_Unit as Ref_Unit ON Ref_Bidang.Kd_Bidang = Ref_Unit.Kd_Bidang INNER JOIN
+												 ".Module::bmd().".Ref_Sub_Unit as Ref_Sub_Unit ON Ref_Unit.Kd_Bidang = Ref_Sub_Unit.Kd_Bidang AND Ref_Unit.Kd_Unit = Ref_Sub_Unit.Kd_Unit)unitall on
+							(unitall.Kd_Bidang = neraca.kd_bidangA and
+							 unitall.Kd_Unit = neraca.kd_unitA and
+							 unitall.Kd_Sub = neraca.kd_subA)	
+							---------end unitall
+							";
+						$data = DB::select(DB::raw("
+														select
+														unitall.Nm_Unit,
+														unitall.Nm_Sub_Unit,
+														neraca.kd_bidangA,
+														neraca.kd_unitA,
+														neraca.kd_aset,
+														neraca.kd_aset0,
+														neraca.kd_Aset1,
+														neraca.kd_Aset2,
+														neraca.Nm_Aset0,
+														neraca.Nm_Aset1,
+														neraca.Nm_Aset2,
+														ISNULL(neraca.harga,0) as saldoawal,
+														ISNULL(pgdbarus.Baru,0) as pgdbaru,
+														ISNULL(pgdkaps.kap,0) as pgdkap,
+														ISNULL(BOSs.BOS,0) as BOS,
+														ISNULL(Hibahs.hibah,0) as HIBAH,
+														ISNULL(rb.harga,0) as RB,
+														ISNULL(mutasi.Hrg_Tambah,0) as Penambahan,
+														--ABS(ISNULL(ISNULL(koreksi.Penambahan,0) - ISNULL(pgdbarus.Baru,0) - ISNULL(pgdkaps.kap,0) - ISNULL(mutasi.Hrg_Tambah,0) - ISNULL(Hibahs.hibah,0) - ISNULL(BOSs.BOS,0),0)) AS Penambahan,
+														--ISNULL(ISNULL(koreksi.Penambahan,0) - ISNULL(pgdbarus.Baru,0) - ISNULL(pgdkaps.kap,0) - ISNULL(mutasi.Hrg_Tambah,0) - ISNULL(Hibahs.hibah,0) - ISNULL(BOSs.BOS,0),0) AS Penambahan,
+														ABS(ISNULL(ISNULL(koreksi.pengurangan,0) - ISNULL(mutasi.Hrg_Kurang,0),0)) as Pengurangan,
+														ISNULL(koreksi.Penambahan,0) as koreksimsk,
+														ISNULL(koreksi.pengurangan,0) as koreksiklr,
+														ISNULL(extrakomtabel.harga,0) as extrakom,
+														ISNULL(neracaakhir.harga,0) as saldoakhir
+
+														from
+														#temp108 neraca
+													left join 
+													----pengadaan baru
+														".$querypgdbaruupb."
+													--end pengadaan baru
+													left join
+													----pengadaan kap
+														".$querypgdkap."													
+													----end pengadaan kap	
+													left join 
+													----BOS/JKN
+														".$queryBOS."
+													-----end BOS
+													left join 
+													-----HIBAH
+														".$queryHIBAH."
+													-----end HIBAH													
+													left join 
+													----mutasi
+													".$queryMUTASI."
+													----end mutasi
+													left join 
+													---- koreksi
+													".$queryKOREKSI."
+													----end KOREKSI
+													left join 
+													-----RB
+													".$queryRB."
+													-----end RB
+													left join 
+													-----EKSTRAKOM
+													".$queryEKSTRAKOM."
+													-----end EKSTRAKOM
+													left join
+													--------neraca akhir
+													".$queryNERACAAKHIR."
+													-----end neraca akhir
+													left join 
+													----unitbmd
+													".$querybidangunitsubupb."
+													----end unitbmd
+										order by neraca.kd_aset,neraca.kd_aset0,neraca.kd_aset1,neraca.kd_aset2 ASC
+								"));
+						}else{
+							
+							
+						}
+
+					$total_row = count($data);
+					  if($total_row > 0){
+					   foreach($data as $index => $row){
+						   $index = $index+1;
+						   if(Module::hasAccess("Rekonsiliasi_asets", "edit")){
+							$output .= '
+							<tr>
+							 <td>'.$index.'</td>
+							 <td>'.$tahun.'</td>
+							 <td>'.$bidang.'</td>
+							 <td>'.$unit.'</td>
+							 <td>'.$subunit.'</td>
+							 <td>'.$row->Nm_Unit.'</td>
+							 <td>'.$row->Nm_Sub_Unit.'</td>
+							 <td>'.$row->kd_aset.'</td>
+							 <td>'.$row->kd_aset0.'</td>
+							 <td>'.$row->kd_Aset1.'</td>
+							 <td>'.$row->kd_Aset2.'</td>
+							 <td>'.$row->Nm_Aset0.'</td>
+							 <td>'.$row->Nm_Aset1.'</td>
+							 <td>'.$row->Nm_Aset2.'</td>
+							 <td>'.$row->saldoawal.'</td>							 							 
+							 <td>'.$row->pgdbaru.'</td>							 							 
+							 <td>'.$row->pgdkap.'</td>							 							 
+							 <td>'.$row->BOS.'</td>							 							 
+							 <td>'.$row->HIBAH.'</td>							 							 
+							 <td>'.$row->RB.'</td>							 							 
+							 <td>'.$row->Penambahan.'</td>							 							 
+							 <td>'.$row->Pengurangan.'</td>							 							 
+							 <td>'.$row->koreksimsk.'</td>							 							 
+							 <td>'.$row->koreksiklr.'</td>							 							 
+							 <td>'.$row->extrakom.'</td>							 							 
+							 <td>'.$row->saldoakhir.'</td>							 							 
+							 
+							 </td>
+							</tr>';
+						   }
+					   }
+					  }else{
+						   $output = '
+						   <tr>
+							<td align="center" colspan="5">No Data Found</td>
+						   </tr>
+						   ';
+					  }
+				  $data = array(
+				   'table_data'  => $output,
+				   'total_data'  => $total_row
+				  );
+
+				  echo json_encode($data);
+				  
+			}
+		}else{
+			return view('errors.404');
+		}            
+    }
+/*end*/		
+	/**
+	 * Datatable Ajax fetch
+	 *
+	 * @return
+	 */
+	public function dtajax()
+	{
+		// $values = DB::table('rekonsiliasi_asets')->select($this->listing_cols)->whereNull('deleted_at');
+		// $out = Datatables::of($values)->make();
+		// $data = $out->getData();
+
+		// $fields_popup = ModuleFields::getModuleFields('Rekonsiliasi_asets');
+		
+		// for($i=0; $i < count($data->data); $i++) {
+			// for ($j=0; $j < count($this->listing_cols); $j++) { 
+				// $col = $this->listing_cols[$j];
+				// if($fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
+					// $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
+				// }
+				// if($col == $this->view_col) {
+					// $data->data[$i][$j] = '<a href="'.url(config('laraadmin.adminRoute') . '/rekonsiliasi_asets/'.$data->data[$i][0]).'">'.$data->data[$i][$j].'</a>';
+				// }
+				// // else if($col == "author") {
+				// //    $data->data[$i][$j];
+				// // }
+			// }
+			
+			// if($this->show_action) {
+				// $output = '';
+				// if(Module::hasAccess("Rekonsiliasi_asets", "edit")) {
+					// $output .= '<a href="'.url(config('laraadmin.adminRoute') . '/rekonsiliasi_asets/'.$data->data[$i][0].'/edit').'" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+				// }
+				
+				// if(Module::hasAccess("Rekonsiliasi_asets", "delete")) {
+					// $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.rekonsiliasi_asets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style'=>'display:inline']);
+					// $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
+					// $output .= Form::close();
+				// }
+				// $data->data[$i][] = (string)$output;
+			// }
+		// }
+		// $out->setData($data);
+		// return $out;
+	}
+}

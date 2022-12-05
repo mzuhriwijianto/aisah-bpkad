@@ -1,0 +1,392 @@
+<?php $__env->startSection("contentheader_title", "Rekonsiliasi asets"); ?>
+<?php $__env->startSection("contentheader_description", "Rekonsiliasi asets listing"); ?>
+<?php $__env->startSection("section", "Rekonsiliasi asets"); ?>
+<?php $__env->startSection("sub_section", "Listing"); ?>
+<?php $__env->startSection("htmlheader_title", "Rekonsiliasi asets Listing"); ?>
+
+<?php $__env->startSection("headerElems"); ?>
+<?php if(LAFormMaker::la_access("Rekonsiliasi_asets", "create")) { ?>
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Rekonsiliasi aset</button>
+<?php } ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
+		<li class="active"><a role="tab" data-toggle="tab" class="active" href="#Entry" data-target="#tab-info"><i class="fa fa-barcode"></i> Entry</a></li>
+		<li class=""><a role="tab" data-toggle="tab" href="#lists" data-target="#tab-timeline"><i class="fa fa-clock-o"></i>Lists Belum Verifikasi</a></li>
+		<li class=""><a role="tab" data-toggle="tab" href="#listsver" data-target="#tab-timeline1"><i class="fa fa-clock-o"></i>Lists Sudah Verifikasi</a></li>
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active fade in" id="tab-info">
+			<div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline">
+				<div class="timeline-item">
+					<div class="panel-default panel-heading">
+						<h4>Rekonsiliasi</h4>
+					</div>
+					<div class="box box-success">
+						
+						<div class="form-group ">
+							<h2>Print List</h2>	
+								<form id = "getprintsoloform" method="POST" action="printsolo" accept-charset="UTF-8" class = "col-sm-6">
+								<input name="_token" type="hidden" value="<?php echo e(csrf_token()); ?>">						
+									<div class="input-group">
+									  <input type="text" name="searchsolo" id="searchsolo" class="form-control" placeholder="Cari.." readonly />
+									  <span class="input-group-btn">															
+											<button class="btn btn-success" type="submit" id= "getprintsolo" onclick = "dellastchar()">
+												<i class="fa fa-print"></i>
+											</button>																									
+									  </span>
+									</div>
+								</form>
+							<div class="input-group" class = "col-sm-6">
+							<span class="input-group-btn">	
+							<button class="btn btn-primary" type="submit" id= "printsolo" onclick = "validate()">
+								GET
+							</button>
+							<button class="btn btn-warning" type="submit" onclick="cleartxt()">
+									<i class="fa fa-undo"></i>
+							</button>
+							 </span>
+							</div>
+						</div>
+						<div class="box-body ">
+							<div class="col-md-4">						
+								<div class="form-group row">
+									<label for="saldo_awal">Tgl Saldo Awal</label>
+									<div class="input-group date">
+										<input class="form-control" placeholder="Enter Tgl Saldo Awal" id="saldo_awals" name="saldo_awal" type="text" value="">
+										<span class="input-group-addon">
+											<span class="fa fa-calendar"></span>
+										</span>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label for="saldo_akhir">Tgl Saldo Akhir</label>
+									<div class="input-group date">
+										<input class="form-control" placeholder="Enter Tgl Saldo Akhir" id="saldo_akhirs" name="saldo_akhir" type="text" value="">
+										<span class="input-group-addon">
+											<span class="fa fa-calendar"></span>
+										</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8">
+							 <div class="form-group row">
+							
+							
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Bidang</label>
+								<select name="bidang" id="bidang" class="form-control">
+									<option value="">== Pilih Bidang ==</option>
+									<option value="%">%</option>
+									 <?php foreach($bidang as $bidangs): ?>
+										<option value="<?php echo e($bidangs->kd_bidang); ?>">
+											<?php echo e($bidangs->kd_bidang.'. '.$bidangs->nm_bidang); ?>
+
+										</option>
+									 <?php endforeach; ?>
+								</select>
+							</div>
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Unit</label>
+								<select name="unit" id="unit" class="form-control">
+									<option value="">== Pilih Unit ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Sub</label>
+								<select name="subunit" id="subunit" class="form-control">
+									<option value="">== Pilih Sub Unit ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>
+							<!--<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">UPB</label>
+								<select name="upb" id="upb" class="form-control">
+									<option value="">== Pilih UPB ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>	-->						
+							<div class="col-md-2">
+							<label for="name" class="col-md-9 col-form-label">GET</label>
+								<button class="btn btn-primary" type="submit" id= "kertaskerja" onclick = "loaddata()">
+									Load KK
+								</button>
+							</div>
+						 </div>
+							</div>
+						</div>
+						<div class="box-body table-responsive">
+						<!--<form id = "getloaddata" method="POST" action="rekonsiliasi_aset_datarekon" accept-charset="UTF-8" class = "col-sm-6">-->
+						
+						<!--</form>-->
+						<!--<form id = "getloaddata" method="POST" action="rekonsiliasi_aset_datarekon" accept-charset="UTF-8" class = "col-sm-6">-->
+						 <div class="form-group row">
+						 <div class="col-md-2">
+							<label for="name" class="col-md-2 col-form-label">Tahun</label>
+								<select name="tahun" id="tahun" class="form-control">
+									<option value="">== Pilih Tahun ==</option>
+										<option value="2019">2019</option>
+										<option value="2020">2020</option>
+										<option value="2021">2021</option>
+										<option value="2022">2022</option>
+								</select>
+							</div>
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Bidang</label>
+								<select name="bidang" id="bidang" class="form-control">
+									<option value="">== Pilih Bidang ==</option>
+									<option value="%">%</option>
+									 <?php foreach($bidang as $bidangs): ?>
+										<option value="<?php echo e($bidangs->kd_bidang); ?>">
+											<?php echo e($bidangs->kd_bidang.'. '.$bidangs->nm_bidang); ?>
+
+										</option>
+									 <?php endforeach; ?>
+								</select>
+							</div>
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Unit</label>
+								<select name="unit" id="unit" class="form-control">
+									<option value="">== Pilih Unit ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>
+							<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">Sub</label>
+								<select name="subunit" id="subunit" class="form-control">
+									<option value="">== Pilih Sub Unit ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>
+							<!--<div class="col-md-2">
+							<label for="name" class="col-md-4 col-form-label">UPB</label>
+								<select name="upb" id="upb" class="form-control">
+									<option value="">== Pilih UPB ==</option>
+									<option value="%">%</option>
+								</select>
+							</div>	-->						
+							<div class="col-md-2">
+							<label for="name" class="col-md-9 col-form-label">GET</label>
+								<button class="btn btn-primary" type="submit" id= "kertaskerja" onclick = "loaddata()">
+									Load KK
+								</button>
+							</div>
+						 </div>
+						<!--</form>-->
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-aqua">
+								<th>No.</th>
+								<th>tahun</th>
+								<th>bidang</th>
+								<th>unit</th>
+								<th>subunit</th>
+								<th>UNIT</th>																											
+								<th>SUB</th>																																																						
+								<th>KD_ASET</th>														
+								<th>KD_ASET0</th>							
+								<th>KD_ASET1</th>							
+								<th>KD_ASET2</th>																			
+								<th>NAMA ASET0</th>														
+								<th>NAMA ASET1</th>							
+								<th>NAMA ASET2</th>							
+								<th>SALDO AWAL</th>																																																																																																																																																																										
+								<th>PGD BARU</th>																																																																																																																																																																										
+								<th>PGD KAP</th>																																																																																																																																																																										
+								<th>BOS/JKN</th>																																																																																																																																																																										
+								<th>HIBAH</th>																																																																																																																																																																										
+								<th>RB</th>																																																																																																																																																																										
+								<th>PENAMBAHAN</th>																																																																																																																																																																										
+								<th>PENGURANGAN</th>																																																																																																																																																																										
+								<th>KRS MSK</th>																																																																																																																																																																										
+								<th>KRS KLR</th>																																																																																																																																																																										
+								<th>EXTRAKOM</th>																																																																																																																																																																										
+								<th>SALDO AKHIR</th>																																																																																																																																																																										
+																																																			
+							 </tr>
+							</thead>
+							<tbody id= "tbody2">	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+			
+		</div>	
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('styles'); ?>
+<link rel="stylesheet" type="text/css" href="<?php echo e(asset('la-assets/plugins/datatables/datatables.min.css')); ?>"/>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script type="text/javascript">
+<<<<<<< .mine
+function stringToDate(str){
+    var date = str.split("/"),
+        d = date[0],
+        m = date[1],
+        y = date[2],
+        temp = [];
+    temp.push(y,m,d);
+    return temp.join("-");
+}
+function loaddata() {
+	
+	var tahunp = $("#tahun option:selected").val();
+	//var kdupb = $("#upb option:selected").val();
+	var kdsub = $("#subunit option:selected").val();
+	var kdunit = $("#unit option:selected").val();
+	var kdbidang = $("#bidang option:selected").val();
+	var saldoawals =  stringToDate($("#saldo_awals").val());
+	var saldoakhirs =  stringToDate($("#saldo_akhirs").val());
+	//var saldoawals =  $("#saldo_awals").datepicker({ dateFormat: 'yy-mm-dd' });
+	//var saldoakhirs = $("#saldo_akhirs").datepicker({ dateFormat: 'yy-mm-dd' });
+	//alert(saldoawals,saldoakhirs);
+ $(document).ready(function () {
+||||||| .r36
+//search
+$(document).ready(function () {
+
+=======
+function loaddata() {
+	var tahunp = $("#tahun option:selected").val();
+	//var kdupb = $("#upb option:selected").val();
+	var kdsub = $("#subunit option:selected").val();
+	var kdunit = $("#unit option:selected").val();
+	var kdbidang = $("#bidang option:selected").val();
+ $(document).ready(function () {
+>>>>>>> .r43
+            fetch_customer_data();
+            function fetch_customer_data(query = '') {
+                $.ajax({
+<<<<<<< .mine
+                    //url:'rekonsiliasi_aset_datarekon/'+tahunp+'/'+kdbidang+'/'+kdunit+'/'+kdsub,
+					url:'rekonsiliasi_aset_datarekon/'+saldoawals+'/'+saldoakhirs+'/'+kdbidang+'/'+kdunit+'/'+kdsub,
+||||||| .r36
+                    url:"<?php echo e(url(config('laraadmin.adminRoute') . '/rekonsiliasi_aset_datarekon')); ?>",
+=======
+                    url:'rekonsiliasi_aset_datarekon/'+tahunp+'/'+kdbidang+'/'+kdunit+'/'+kdsub,
+>>>>>>> .r43
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#tbody2').html(data.table_data);
+                    }
+                })
+            }
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);				
+            });		
+        });
+}
+//endsearch
+//load unit
+jQuery(document).ready(function (){
+            jQuery('select[name="bidang"]').on('change',function(){
+               var kdbidang = jQuery(this).val();
+               if(kdbidang)
+               {
+                  jQuery.ajax({
+                     url : 'rekonsiliasi_aset_getunit/' +kdbidang,
+                     type : "GET",
+                     dataType : "json",
+                     success:function(data)
+                     {
+                        //console.log(data);
+                        jQuery('select[name="unit"]').empty();
+						$('select[name="unit"]').append('<option value="%">%</option>');
+                        jQuery.each(data, function(key,value){
+                           $('select[name="unit"]').append('<option value="'+ key +'">'+key+ '. '+ value +'</option>');
+                        });
+                     }
+                  });
+               }
+               else
+               {
+                  $('select[name="unit"]').empty();
+               }
+            });
+    });
+//end
+//load sub unit
+jQuery(document).ready(function (){
+            jQuery('select[name="unit"]').on('change',function(){
+				var kdunit= jQuery(this).val();
+			    var kdbidang = $("#bidang option:selected").val();
+               
+               if(kdunit){				  
+                  jQuery.ajax({
+                     url : 'rekonsiliasi_aset_getsubunit/' +kdbidang+'/'+kdunit,
+                     type : "GET",
+                     dataType : "json",
+                     success:function(data)
+                     {
+                        //console.log(data);
+                        jQuery('select[name="subunit"]').empty();
+						$('select[name="subunit"]').append('<option value="%">%</option>');
+                        jQuery.each(data, function(key,value){
+                           $('select[name="subunit"]').append('<option value="'+ key +'">'+key+ '. '+ value +'</option>');
+                        });
+                     }
+                  });
+               }else{
+                  $('select[name="subunit"]').empty();
+               } 
+            });
+    });
+//end
+//load upb
+jQuery(document).ready(function (){
+         jQuery('select[name="subunit"]').on('change',function(){
+				var kdsub= jQuery(this).val();
+				var kdunit = $("#unit option:selected").val();
+			    var kdbidang = $("#bidang option:selected").val();
+               
+               if(kdsub){				  
+                  jQuery.ajax({
+                     url : 'rekonsiliasi_aset_getupb/' +kdbidang+'/'+kdunit+'/'+kdsub,
+                     type : "GET",
+                     dataType : "json",
+                     success:function(data)
+                     {
+                        //console.log(data);
+                        jQuery('select[name="upb"]').empty();
+						$('select[name="upb"]').append('<option value="%">%</option>');
+                        jQuery.each(data, function(key,value){
+                           $('select[name="upb"]').append('<option value="'+ key +'">'+key+ '. '+ value +'</option>');
+                        });
+                     }
+                  });
+               }else{
+                  $('select[name="upb"]').empty();
+               } 
+            });
+    });
+//end
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

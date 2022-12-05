@@ -1,0 +1,192 @@
+<?php $__env->startSection("contentheader_title", "Pengajuan loanings"); ?>
+<?php $__env->startSection("contentheader_description", "Pengajuan loanings listing"); ?>
+<?php $__env->startSection("section", "Pengajuan loanings"); ?>
+<?php $__env->startSection("sub_section", "Listing"); ?>
+<?php $__env->startSection("htmlheader_title", "Pengajuan loanings Listing"); ?>
+
+<?php $__env->startSection("headerElems"); ?>
+<?php if(LAFormMaker::la_access("Pengajuan_loanings", "create")) { ?>
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Pengajuan loaning</button>
+<?php } ?>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection("main-content"); ?>
+
+<?php if(count($errors) > 0): ?>
+    <div class="alert alert-danger">
+        <ul>
+            <?php foreach($errors->all() as $error): ?>
+                <li><?php echo e($error); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div class="tab-content">
+	<div role="tabpanel" class="tab-pane active fade in" id="tab-info">
+		<div class="timeline-item">
+				<div class="timeline-item">
+					<div class="panel-default panel-heading">
+						<h4>Lists</h4>
+					</div>
+					<div class="box box-success">
+						<div class="form-group">
+						<h2>Nomor Polisi</h2>
+							<input type="text" name="search" id="search" class="form-control" placeholder="Cari.." />
+						</div>
+						<div class="form-group ">
+							<h2>Print List</h2>	
+						<form id = "getprintsoloform" method="POST" action="bcdsolo" accept-charset="UTF-8" class = "col-sm-6">
+						<input name="_token" type="hidden" value="<?php echo e(csrf_token()); ?>">						
+							<div class="input-group">
+							  <input type="text" name="searchsolo" id="searchsolo" class="form-control" placeholder="Cari.." readonly />
+							  <span class="input-group-btn">															
+									<button class="btn btn-success" type="submit" id= "getprintsolo" onclick = "dellastchar()">
+										<i class="fa fa-print"></i>
+									</button>																									
+							  </span>
+							</div>
+						</form>
+							<div class="input-group" class = "col-sm-6">
+							<span class="input-group-btn">	
+							<button class="btn btn-primary" type="submit" id= "printsolo" onclick = "validate()">
+								GET
+							</button>
+							<button class="btn btn-warning" type="submit" onclick="cleartxt()">
+									<i class="fa fa-undo"></i>
+							</button>
+							 </span>
+							</div>
+						</div>
+						<div class="box-body table-responsive">
+							<table id="example1" class="table table-bordered table-striped">
+							<thead>
+							<tr class="bg-aqua">
+								<th>No.</th>
+								<th>Dept</th>															
+								<th>User</th>															
+								<th>Merk</th>							
+								<th>Type</th>																										
+								<th>No Polisi</th>							
+								<th>No BPKB</th>													
+								<th>Tgl Pajak</th>																											
+								<th>Tgl Peminjaman</th>																											
+								<th>Tgl Pengembalian</th>																											
+								<th>Pemegang Kendaraan</th>																											
+								<th>Status</th>																											
+								<th>Action</th>																											
+							 </tr>
+							</thead>
+							<tbody id = "tbody1">	
+
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>		
+</div>
+
+<?php if(LAFormMaker::la_access("Pengajuan_loanings", "create")) { ?>
+<div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Add Pengajuan loaning</h4>
+			</div>
+			<?php echo Form::open(['action' => 'LA\Pengajuan_loaningsController@store', 'id' => 'pengajuan_loaning-add-form']); ?>
+
+			<div class="modal-body">
+				<div class="box-body">
+                   <?php /* <?php echo LAFormMaker::form($module); ?> */ ?>
+					
+					<?php /*<?php echo LAFormMaker::input($module, 'idpemda'); ?>
+					<?php echo LAFormMaker::input($module, 'alasan_peminjaman'); ?>
+					<?php echo LAFormMaker::input($module, 'peminjam'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_peminjaman'); ?>
+					<?php echo LAFormMaker::input($module, 'tgl_pengembalian'); ?>
+					<?php echo LAFormMaker::input($module, 'no_polisi'); ?>
+					<?php echo LAFormMaker::input($module, 'status'); ?>
+					<?php echo LAFormMaker::input($module, 'dept'); ?>*/ ?>
+					<?php echo LAFormMaker::input($module, 'alasan_peminjaman'); ?>
+					<div class="form-group">
+						<label for="peminjam">Peminjam :</label>
+						<input class="form-control" placeholder="<?php echo e($username); ?>" name="peminjam" value="" readonly>
+					</div>
+					<div class="form-group">
+						<label for="tgl_peminjaman">tgl_peminjaman :</label>
+						<div class="input-group date">
+							<input class="form-control" placeholder="Enter tgl_peminjaman" name="tgl_peminjaman" type="text" value="">
+							<span class="input-group-addon">
+								<span class="fa fa-calendar"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="tgl_pengembalian">tgl_pengembalian :</label>
+						<div class="input-group date">
+							<input class="form-control" placeholder="Enter tgl_pengembalian" name="tgl_pengembalian" type="text" value="">
+							<span class="input-group-addon">
+								<span class="fa fa-calendar"></span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+					<select class="form-control select2-hidden-accessible" data-placeholder="Enter Nomor Polisi" rel="select2" name="idpemda">
+						<?php foreach($data as $datas): ?>
+						<option value="<?php echo e($datas->idpemda); ?>"><?php echo e($datas->nomor_polisi); ?> - <?php echo e($datas->merk); ?></option>						
+						<?php endforeach; ?>
+					</select>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<?php echo Form::submit( 'Submit', ['class'=>'btn btn-success']); ?>
+
+			</div>
+			<?php echo Form::close(); ?>
+
+		</div>
+	</div>
+</div>
+<?php } ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('styles'); ?>
+
+<?php $__env->stopPush(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+
+<script>
+//search
+$(document).ready(function () {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url:"<?php echo e(url(config('laraadmin.adminRoute') . '/pengajuan_loaning_dt_ajax')); ?>",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#tbody1').html(data.table_data);
+                    }
+                })
+            }
+
+            $(document).on('keyup', '#search', function () {
+                var query = $(this).val();
+                fetch_customer_data(query);				
+            });		
+        });
+//endsearch
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make("la.layouts.app", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
